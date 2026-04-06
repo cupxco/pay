@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPay | Coming Soon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --google-blue: #4285F4;
+            --google-red: #EA4335;
+            --google-yellow: #FBBC04;
+            --google-green: #34A853;
+            --text-dark: #3c4043;
+            --text-light: #5f6368;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+            background-color: #ffffff;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            max-width: 500px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* The CPay Logo Styling */
+        .logo-container {
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cpay-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+        }
+
+        .brand-name {
+            font-size: 32px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            color: var(--text-light);
+        }
+
+        .brand-name span {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        p {
+            font-size: 18px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: #f8f9fa;
+            border: 1px solid #dadce0;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--google-blue);
+            margin-bottom: 20px;
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: #e8eaed;
+            border-radius: 10px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                var(--google-blue), 
+                var(--google-red), 
+                var(--google-yellow), 
+                var(--google-green));
+            animation: progress 2s infinite linear;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 30px;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        footer a {
+            color: var(--google-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes progress {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            h1 { font-size: 28px; }
+            p { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-container">
+            <svg class="cpay-logo" viewBox="0 0 100 100">
+                <path d="M 50 10 A 40 40 0 0 1 90 50" fill="none" stroke="#4285F4" stroke-width="12" stroke-linecap="round"/>
+                <path d="M 10 50 A 40 40 0 0 1 50 10" fill="none" stroke="#EA4335" stroke-width="12" stroke-linecap="round"/>
+                <path d="M 50 90 A 40 40 0 0 1 10 50" fill="none" stroke="#FBBC04" stroke-width="12" stroke-linecap="round"/>
+                <path d="M 90 50 A 40 40 0 0 1 50 90" fill="none" stroke="#34A853" stroke-width="12" stroke-linecap="round"/>
+                </svg>
+            <div class="brand-name">CupX<span>Pay</span></div>
+        </div>
+
+        <div class="status-badge">Project: Sandbox Mode</div>
+        
+        <h1>Fast, simple, and imaginary.</h1>
+        <p>Your ultimate mock payment gateway for the CupX ecosystem. We're currently wiring the simulation.</p>
+
+        <div class="loading-bar"></div>
+    </div>
+
+    <footer>
+        Part of the <a href="https://cupx.in">CupX Corporation</a> System
+    </footer>
+
+</body>
+</html>
