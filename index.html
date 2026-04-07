@@ -1,176 +1,1550 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPay | Coming Soon</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --google-blue: #4285F4;
-            --google-red: #EA4335;
-            --google-yellow: #FBBC04;
-            --google-green: #34A853;
-            --text-dark: #3c4043;
-            --text-light: #5f6368;
-        }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CPay – CupX Payments</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+:root {
+  --gpay-blue: #1A73E8;
+  --gpay-blue-dark: #1557B0;
+  --gpay-green: #34A853;
+  --gpay-red: #EA4335;
+  --gpay-yellow: #FBBC04;
+  --gpay-bg: #F8F9FA;
+  --gpay-surface: #FFFFFF;
+  --gpay-text: #202124;
+  --gpay-muted: #5F6368;
+  --gpay-border: #E8EAED;
+  --gpay-hover: #F1F3F4;
+}
 
-        body {
-            font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
-            background-color: #ffffff;
-            color: var(--text-dark);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .container {
-            text-align: center;
-            padding: 20px;
-            max-width: 500px;
-            animation: fadeIn 1s ease-in-out;
-        }
+body {
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+  background: var(--gpay-bg);
+  color: var(--gpay-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+}
 
-        /* The CPay Logo Styling */
-        .logo-container {
-            margin-bottom: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+/* ── HEADER ── */
+.header {
+  background: var(--gpay-surface);
+  height: 60px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--gpay-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
 
-        .cpay-logo {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 10px;
-        }
+.header-left { display: flex; align-items: center; gap: 10px; }
 
-        .brand-name {
-            font-size: 32px;
-            font-weight: 500;
-            letter-spacing: -0.5px;
-            color: var(--text-light);
-        }
+.back-btn {
+  background: none;
+  border: none;
+  color: var(--gpay-muted);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: background .15s;
+}
+.back-btn:hover { background: var(--gpay-hover); }
 
-        .brand-name span {
-            font-weight: 700;
-            color: var(--text-dark);
-        }
+/* CPay Logo */
+.cpay-logo {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.cpay-logo-c {
+  font-family: 'Sora', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.cpay-logo-pay {
+  font-family: 'Sora', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--gpay-muted);
+}
+.c-blue  { color: var(--gpay-blue); }
+.c-red   { color: var(--gpay-red); }
+.c-yellow{ color: var(--gpay-yellow); }
+.c-green { color: var(--gpay-green); }
 
-        h1 {
-            font-size: 36px;
-            font-weight: 500;
-            margin-bottom: 15px;
-            color: var(--text-dark);
-        }
+.header-avatar {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gpay-blue), #4285F4);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
 
-        p {
-            font-size: 18px;
-            color: var(--text-light);
-            line-height: 1.6;
-            margin-bottom: 40px;
-        }
+/* ── MAIN ── */
+.main { flex: 1; padding: 0 0 80px; max-width: 480px; margin: 0 auto; width: 100%; }
 
-        .status-badge {
-            display: inline-block;
-            background: #f8f9fa;
-            border: 1px solid #dadce0;
-            padding: 8px 20px;
-            border-radius: 100px;
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--google-blue);
-            margin-bottom: 20px;
-        }
+/* ── SIGNIN SCREEN ── */
+#signinScreen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 20px;
+  min-height: calc(100vh - 60px);
+}
 
-        .loading-bar {
-            width: 200px;
-            height: 4px;
-            background: #e8eaed;
-            border-radius: 10px;
-            margin: 0 auto;
-            position: relative;
-            overflow: hidden;
-        }
+.signin-card {
+  background: white;
+  border-radius: 24px;
+  padding: 36px 28px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+}
 
-        .loading-bar::after {
-            content: '';
-            position: absolute;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, 
-                var(--google-blue), 
-                var(--google-red), 
-                var(--google-yellow), 
-                var(--google-green));
-            animation: progress 2s infinite linear;
-        }
+.signin-logo-area {
+  text-align: center;
+  margin-bottom: 30px;
+}
 
-        footer {
-            position: absolute;
-            bottom: 30px;
-            font-size: 14px;
-            color: var(--text-light);
-        }
+.signin-logo-area .big-logo {
+  font-size: 38px;
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
 
-        footer a {
-            color: var(--google-blue);
-            text-decoration: none;
-            font-weight: 500;
-        }
+.signin-logo-area p {
+  font-size: 14px;
+  color: var(--gpay-muted);
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+.form-group { margin-bottom: 18px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--gpay-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
 
-        @keyframes progress {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
+.form-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border: 1.5px solid var(--gpay-border);
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--gpay-text);
+  background: var(--gpay-bg);
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.form-input:focus { border-color: var(--gpay-blue); box-shadow: 0 0 0 3px rgba(26,115,232,0.12); background: white; }
 
-        /* Mobile Adjustments */
-        @media (max-width: 480px) {
-            h1 { font-size: 28px; }
-            p { font-size: 16px; }
-        }
-    </style>
+.pass-wrap { position: relative; }
+.pass-toggle {
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  font-size: 12px; font-weight: 600; color: var(--gpay-blue);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-gpay {
+  width: 100%; height: 48px;
+  background: var(--gpay-blue);
+  color: white; border: none;
+  border-radius: 24px;
+  font-size: 15px; font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  transition: background .2s, box-shadow .2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-gpay:hover { background: var(--gpay-blue-dark); box-shadow: 0 2px 8px rgba(26,115,232,0.3); }
+.btn-gpay:disabled { opacity: .6; cursor: not-allowed; }
+
+.signin-footer { text-align: center; margin-top: 20px; font-size: 13px; color: var(--gpay-muted); }
+.signin-footer a { color: var(--gpay-blue); text-decoration: none; font-weight: 500; }
+
+.err-msg { color: var(--gpay-red); font-size: 13px; margin-bottom: 14px; min-height: 18px; text-align: center; }
+
+/* ── DASHBOARD ── */
+#dashScreen { display: none; }
+
+/* Balance Hero */
+.balance-hero {
+  background: linear-gradient(160deg, #1A73E8 0%, #0D47A1 100%);
+  padding: 28px 20px 32px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.balance-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; right: -40px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+}
+.balance-hero::before {
+  content: '';
+  position: absolute;
+  top: -40px; left: -30px;
+  width: 130px; height: 130px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+
+.bh-greeting { font-size: 13px; opacity: .8; margin-bottom: 3px; }
+.bh-name { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+
+.bh-balance-box {
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background .2s;
+}
+.bh-balance-box:hover { background: rgba(255,255,255,0.18); }
+
+.bh-bal-left {}
+.bh-bal-label { font-size: 11px; opacity: .75; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; }
+.bh-bal-amount { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 700; }
+.bh-bal-upi { font-size: 12px; opacity: .7; margin-top: 3px; }
+
+.bh-check-btn {
+  background: rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background .15s;
+}
+.bh-check-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* Quick Actions */
+.section { padding: 20px 16px 0; }
+.section-title { font-size: 13px; font-weight: 600; color: var(--gpay-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.qa-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 10px 4px;
+  border-radius: 14px;
+  transition: background .15s;
+}
+.qa-item:hover { background: var(--gpay-hover); }
+.qa-item:active { transform: scale(.95); }
+
+.qa-icon {
+  width: 52px; height: 52px;
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.qa-blue   { background: #E8F0FE; }
+.qa-green  { background: #E6F4EA; }
+.qa-red    { background: #FCE8E6; }
+.qa-yellow { background: #FEF7E0; }
+.qa-indigo { background: #EDE7F6; }
+.qa-teal   { background: #E0F2F1; }
+.qa-pink   { background: #FCE4EC; }
+.qa-orange { background: #FFF3E0; }
+
+.qa-label { font-size: 11px; font-weight: 500; color: var(--gpay-text); text-align: center; line-height: 1.3; }
+
+/* People row */
+.people-row {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  -webkit-overflow-scrolling: touch;
+}
+.people-row::-webkit-scrollbar { display: none; }
+
+.person-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.person-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+.person-name { font-size: 11px; color: var(--gpay-text); font-weight: 500; text-align: center; max-width: 56px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Cards */
+.card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid var(--gpay-border);
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+
+.card-header {
+  padding: 14px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title { font-size: 15px; font-weight: 600; }
+.card-link { font-size: 13px; color: var(--gpay-blue); font-weight: 500; cursor: pointer; }
+
+/* Txn items */
+.txn-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--gpay-border);
+  transition: background .15s;
+  cursor: pointer;
+}
+.txn-item:hover { background: var(--gpay-hover); }
+
+.txn-avatar {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.txn-info { flex: 1; min-width: 0; }
+.txn-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.txn-sub { font-size: 12px; color: var(--gpay-muted); margin-top: 2px; }
+
+.txn-right { text-align: right; flex-shrink: 0; }
+.txn-amount { font-size: 15px; font-weight: 600; font-family: 'Sora', sans-serif; }
+.ta-green { color: var(--gpay-green); }
+.ta-red   { color: var(--gpay-red); }
+.ta-muted { color: var(--gpay-muted); }
+
+.txn-status { font-size: 11px; margin-top: 2px; }
+.ts-success { color: var(--gpay-green); }
+.ts-pending { color: #F9AB00; }
+.ts-failed  { color: var(--gpay-red); }
+
+.txn-empty { padding: 28px 16px; text-align: center; color: var(--gpay-muted); font-size: 14px; }
+.txn-loading { padding: 24px 16px; text-align: center; }
+
+/* Filter chips */
+.filter-chips {
+  display: flex;
+  gap: 8px;
+  padding: 10px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.filter-chips::-webkit-scrollbar { display: none; }
+
+.chip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--gpay-border);
+  background: white;
+  color: var(--gpay-muted);
+  white-space: nowrap;
+  transition: all .15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.chip.active { background: #E8F0FE; color: var(--gpay-blue); border-color: #C5D8FC; font-weight: 600; }
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 24px; height: 24px;
+  border: 2.5px solid var(--gpay-border);
+  border-top-color: var(--gpay-blue);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Bottom Nav */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: white;
+  border-top: 1px solid var(--gpay-border);
+  display: none;
+  justify-content: space-around;
+  padding: 8px 0 env(safe-area-inset-bottom, 8px);
+  z-index: 100;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  padding: 6px 16px;
+  border-radius: 10px;
+  transition: background .15s;
+  flex: 1;
+}
+.nav-item:hover { background: var(--gpay-hover); }
+.nav-icon { font-size: 20px; line-height: 1; }
+.nav-label { font-size: 10px; font-weight: 500; color: var(--gpay-muted); }
+.nav-item.active .nav-label { color: var(--gpay-blue); font-weight: 600; }
+
+/* ── MODALS ── */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 200;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+
+.modal-sheet {
+  background: white;
+  border-radius: 24px 24px 0 0;
+  padding: 24px 22px 40px;
+  width: 100%; max-width: 480px;
+  animation: slideUp .3s cubic-bezier(.32,.72,0,1);
+  max-height: 92vh;
+  overflow-y: auto;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.modal-handle { width: 36px; height: 4px; background: var(--gpay-border); border-radius: 2px; margin: 0 auto 20px; }
+.modal-title { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; color: var(--gpay-text); margin-bottom: 4px; }
+.modal-sub { font-size: 13px; color: var(--gpay-muted); margin-bottom: 20px; }
+.modal-err { color: var(--gpay-red); font-size: 13px; text-align: center; min-height: 18px; margin-bottom: 10px; }
+.modal-ok { color: var(--gpay-green); font-size: 14px; font-weight: 600; text-align: center; margin-bottom: 10px; }
+
+/* Amount input */
+.amount-display {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+.amount-currency { font-size: 28px; color: var(--gpay-muted); vertical-align: super; }
+.amount-input {
+  font-family: 'Sora', sans-serif;
+  font-size: 52px;
+  font-weight: 700;
+  color: var(--gpay-text);
+  border: none;
+  outline: none;
+  width: 100%;
+  text-align: center;
+  background: transparent;
+  caret-color: var(--gpay-blue);
+}
+.amount-input::placeholder { color: #C5C7CA; }
+
+.amount-divider {
+  height: 2px;
+  background: var(--gpay-border);
+  border-radius: 2px;
+  margin-bottom: 20px;
+  transition: background .2s;
+}
+.amount-divider.focused { background: var(--gpay-blue); }
+
+/* Recipient display */
+.recipient-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--gpay-bg);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+}
+.rc-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+.rc-info {}
+.rc-name { font-size: 15px; font-weight: 600; }
+.rc-upi { font-size: 12px; color: var(--gpay-muted); }
+
+/* Note input */
+.note-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid var(--gpay-border);
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--gpay-text);
+  background: var(--gpay-bg);
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color .2s;
+  margin-bottom: 18px;
+}
+.note-input:focus { border-color: var(--gpay-blue); background: white; }
+
+/* UPI ID input */
+.upi-search-wrap {
+  position: relative;
+  margin-bottom: 8px;
+}
+.upi-search-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 50px 0 16px;
+  border: 1.5px solid var(--gpay-border);
+  border-radius: 12px;
+  font-size: 15px;
+  color: var(--gpay-text);
+  background: var(--gpay-bg);
+  outline: none;
+  font-family: 'DM Sans', sans-serif;
+  transition: border-color .2s;
+}
+.upi-search-input:focus { border-color: var(--gpay-blue); background: white; }
+.upi-search-btn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: var(--gpay-blue); color: white;
+  border: none; border-radius: 8px;
+  padding: 6px 12px; font-size: 13px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+}
+
+/* PIN row */
+.pin-section-label { font-size: 12px; font-weight: 600; color: var(--gpay-muted); text-align: center; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+
+.pin-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
+.pin-box {
+  width: 50px; height: 56px;
+  border: 2px solid var(--gpay-border);
+  border-radius: 12px;
+  text-align: center;
+  font-size: 22px; font-weight: 700;
+  color: var(--gpay-text);
+  background: var(--gpay-bg);
+  outline: none;
+  transition: border-color .15s;
+  font-family: 'Sora', sans-serif;
+  -webkit-text-security: disc;
+}
+.pin-box:focus { border-color: var(--gpay-blue); background: white; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
+
+/* Buttons */
+.modal-btn-row { display: flex; gap: 10px; margin-top: 6px; }
+.btn-outline {
+  flex: 1; height: 44px;
+  background: white; color: var(--gpay-text);
+  border: 1.5px solid var(--gpay-border);
+  border-radius: 22px; font-size: 14px; font-weight: 500;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background .15s;
+}
+.btn-outline:hover { background: var(--gpay-hover); }
+.btn-blue {
+  flex: 2; height: 44px;
+  background: var(--gpay-blue); color: white;
+  border: none; border-radius: 22px;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background .15s;
+}
+.btn-blue:hover { background: var(--gpay-blue-dark); }
+.btn-blue:disabled { opacity: .6; cursor: not-allowed; }
+.btn-green {
+  flex: 2; height: 44px;
+  background: var(--gpay-green); color: white;
+  border: none; border-radius: 22px;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background .15s;
+}
+.btn-green:hover { background: #2D9249; }
+.btn-green:disabled { opacity: .6; cursor: not-allowed; }
+
+/* Success animation */
+.success-screen {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+.success-circle {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: #E6F4EA;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  margin: 0 auto 16px;
+  animation: popIn .4s cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.success-title { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 700; color: var(--gpay-green); margin-bottom: 6px; }
+.success-amt { font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 700; color: var(--gpay-text); margin-bottom: 4px; }
+.success-to { font-size: 14px; color: var(--gpay-muted); margin-bottom: 20px; }
+
+/* Request result */
+.req-result {
+  background: var(--gpay-bg);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+.req-result-amt { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; color: var(--gpay-text); }
+.req-result-from { font-size: 13px; color: var(--gpay-muted); margin-top: 4px; }
+
+/* Pending requests */
+.pending-req-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--gpay-border);
+}
+.pr-info { flex: 1; }
+.pr-title { font-size: 14px; font-weight: 500; }
+.pr-sub { font-size: 12px; color: var(--gpay-muted); }
+.pr-amt { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; color: var(--gpay-text); margin-right: 8px; }
+.pr-actions { display: flex; gap: 6px; }
+.pr-accept {
+  background: var(--gpay-green); color: white;
+  border: none; padding: 6px 12px; border-radius: 16px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+.pr-decline {
+  background: white; color: var(--gpay-red);
+  border: 1.5px solid #FECDD3; padding: 6px 12px; border-radius: 16px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* Profile sheet */
+.profile-info-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 0 20px;
+  border-bottom: 1px solid var(--gpay-border);
+  margin-bottom: 16px;
+}
+.profile-avatar-lg {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gpay-blue), #4285F4);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; font-weight: 700;
+}
+.profile-name { font-size: 18px; font-weight: 600; }
+.profile-upi { font-size: 13px; color: var(--gpay-muted); }
+.profile-bal { font-size: 13px; color: var(--gpay-green); font-weight: 500; margin-top: 2px; }
+
+.profile-menu-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--gpay-border);
+  cursor: pointer;
+  transition: background .15s;
+  border-radius: 8px;
+}
+.profile-menu-item:hover { background: var(--gpay-hover); padding-left: 8px; }
+.pmi-icon { font-size: 20px; width: 28px; text-align: center; }
+.pmi-label { font-size: 14px; font-weight: 500; flex: 1; }
+.pmi-arrow { color: var(--gpay-muted); font-size: 16px; }
+
+@media(max-width:380px) {
+  .pin-box { width: 44px; height: 50px; }
+  .quick-actions { grid-template-columns: repeat(4,1fr); gap: 4px; }
+  .qa-icon { width: 44px; height: 44px; }
+}
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="logo-container">
-            <svg class="cpay-logo" viewBox="0 0 100 100">
-                <path d="M 50 10 A 40 40 0 0 1 90 50" fill="none" stroke="#4285F4" stroke-width="12" stroke-linecap="round"/>
-                <path d="M 10 50 A 40 40 0 0 1 50 10" fill="none" stroke="#EA4335" stroke-width="12" stroke-linecap="round"/>
-                <path d="M 50 90 A 40 40 0 0 1 10 50" fill="none" stroke="#FBBC04" stroke-width="12" stroke-linecap="round"/>
-                <path d="M 90 50 A 40 40 0 0 1 50 90" fill="none" stroke="#34A853" stroke-width="12" stroke-linecap="round"/>
-                </svg>
-            <div class="brand-name">CupX<span>Pay</span></div>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <button class="back-btn" onclick="goBack()">&#8592;</button>
+    <div class="cpay-logo">
+      <span class="cpay-logo-c">
+        <span class="c-blue">C</span><span class="c-red">p</span><span class="c-yellow">a</span><span class="c-green">y</span>
+      </span>
+    </div>
+  </div>
+  <div class="header-avatar" id="headerAvatar" onclick="openProfile()">?</div>
+</header>
+
+<!-- SIGNIN -->
+<div id="signinScreen">
+  <div class="signin-card">
+    <div class="signin-logo-area">
+      <div class="big-logo">
+        <span class="c-blue">C</span><span class="c-red">p</span><span class="c-yellow">a</span><span class="c-green">y</span>
+      </div>
+      <p>Sign in to CupX Payments</p>
+    </div>
+    <div id="siErr" class="err-msg"></div>
+    <div class="form-group">
+      <label>Username</label>
+      <input class="form-input" type="text" id="siUser" placeholder="your_username" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label>Password</label>
+      <div class="pass-wrap">
+        <input class="form-input" type="password" id="siPass" placeholder="••••••••" autocomplete="current-password"/>
+        <button class="pass-toggle" type="button" onclick="togglePw('siPass',this)">Show</button>
+      </div>
+    </div>
+    <button class="btn-gpay" id="siBtn" onclick="doSignin()">
+      <span id="siBtnTxt">Sign In</span>
+    </button>
+    <div class="signin-footer">
+      New to CupX? <a href="https://auth.cupx.in?from=pay">Create Account</a>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashScreen">
+
+  <!-- Balance Hero -->
+  <div class="balance-hero">
+    <div class="bh-greeting">Good day,</div>
+    <div class="bh-name" id="bhName">—</div>
+    <div class="bh-balance-box" onclick="openCheckBal()">
+      <div class="bh-bal-left">
+        <div class="bh-bal-label">Wallet Balance</div>
+        <div class="bh-bal-amount" id="balDisplay">₹ ••••••</div>
+        <div class="bh-bal-upi" id="bhUpi">—</div>
+      </div>
+      <button class="bh-check-btn">Check Balance</button>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- Quick Actions -->
+    <div class="section">
+      <div class="quick-actions">
+        <div class="qa-item" onclick="openSendModal()">
+          <div class="qa-icon qa-blue">💸</div>
+          <div class="qa-label">Send Money</div>
         </div>
-
-        <div class="status-badge">Project: Sandbox Mode</div>
-        
-        <h1>Fast, simple, and imaginary.</h1>
-        <p>Your ultimate mock payment gateway for the CupX ecosystem. We're currently wiring the simulation.</p>
-
-        <div class="loading-bar"></div>
+        <div class="qa-item" onclick="openRequestModal()">
+          <div class="qa-icon qa-green">📲</div>
+          <div class="qa-label">Request</div>
+        </div>
+        <div class="qa-item" onclick="openPendingModal()">
+          <div class="qa-icon qa-yellow">⏳</div>
+          <div class="qa-label">Pending</div>
+        </div>
+        <div class="qa-item" onclick="window.location.href='https://upi.cupx.in'">
+          <div class="qa-icon qa-indigo">🔑</div>
+          <div class="qa-label">Manage UPI</div>
+        </div>
+      </div>
     </div>
 
-    <footer>
-        Part of the <a href="https://cupx.in">CupX Corporation</a> System
-    </footer>
+    <!-- Recent People -->
+    <div class="section" id="peopleSection" style="display:none">
+      <div class="section-title">Recent</div>
+      <div class="people-row" id="peopleRow"></div>
+    </div>
 
+    <!-- Transaction History -->
+    <div class="section" style="padding-bottom:0">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Transaction History</div>
+        </div>
+        <div class="filter-chips">
+          <button class="chip active" onclick="filterTxn('all',this)">All</button>
+          <button class="chip" onclick="filterTxn('credit',this)">Received</button>
+          <button class="chip" onclick="filterTxn('debit',this)">Sent</button>
+          <button class="chip" onclick="filterTxn('pending',this)">Pending</button>
+        </div>
+        <div id="txnList">
+          <div class="txn-loading"><div class="spinner"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ SEND MONEY MODAL (Step 1: Enter UPI ID) ══ -->
+<div class="modal-overlay" id="sendModal1" onclick="closeMo('sendModal1',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Send Money</div>
+    <div class="modal-sub">Enter recipient's UPI ID or username</div>
+    <div id="send1Err" class="modal-err"></div>
+    <div class="upi-search-wrap">
+      <input class="upi-search-input" type="text" id="sendRecipient" placeholder="username or upi@cupx"/>
+      <button class="upi-search-btn" onclick="lookupRecipient()">Find</button>
+    </div>
+    <div id="recipientResult" style="display:none;margin-bottom:16px;"></div>
+    <div class="modal-btn-row">
+      <button class="btn-outline" onclick="closeMo('sendModal1')">Cancel</button>
+      <button class="btn-blue" id="sendNext1Btn" onclick="goSendStep2()" disabled>Next</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEND MONEY MODAL (Step 2: Amount + Note) ══ -->
+<div class="modal-overlay" id="sendModal2" onclick="closeMo('sendModal2',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Enter Amount</div>
+    <div id="recipientChip2"></div>
+    <div class="amount-display">
+      <div>
+        <span class="amount-currency">₹</span>
+        <input class="amount-input" type="number" id="sendAmount" placeholder="0" min="1" inputmode="decimal"/>
+      </div>
+      <div class="amount-divider" id="amtDivider"></div>
+    </div>
+    <input class="note-input" type="text" id="sendNote" placeholder="Add a note (optional)"/>
+    <div id="send2Err" class="modal-err"></div>
+    <div class="modal-btn-row">
+      <button class="btn-outline" onclick="closeMo('sendModal2')">Cancel</button>
+      <button class="btn-blue" onclick="goSendStep3()">Pay</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEND MONEY MODAL (Step 3: UPI PIN confirm) ══ -->
+<div class="modal-overlay" id="sendModal3" onclick="closeMo('sendModal3',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Enter UPI PIN</div>
+    <div class="modal-sub">Confirm payment with your PIN</div>
+    <div id="sendSummary" style="background:var(--gpay-bg);border-radius:14px;padding:14px 16px;margin-bottom:18px;text-align:center;">
+      <div style="font-size:13px;color:var(--gpay-muted);">Paying to</div>
+      <div style="font-size:16px;font-weight:600;margin:4px 0;" id="sendSummaryTo">—</div>
+      <div style="font-family:'Sora',sans-serif;font-size:30px;font-weight:700;" id="sendSummaryAmt">₹0</div>
+    </div>
+    <div class="pin-section-label">UPI PIN</div>
+    <div class="pin-row">
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="sp0"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="sp1"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="sp2"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="sp3"/>
+    </div>
+    <div id="send3Err" class="modal-err"></div>
+    <div class="modal-btn-row">
+      <button class="btn-outline" onclick="closeMo('sendModal3')">Cancel</button>
+      <button class="btn-green" id="sendPayBtn" onclick="executeSend()">Pay Now</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SEND SUCCESS ══ -->
+<div class="modal-overlay" id="sendSuccess" onclick="closeMo('sendSuccess',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="success-screen">
+      <div class="success-circle">✓</div>
+      <div class="success-title">Payment Sent!</div>
+      <div class="success-amt" id="successAmt">₹0</div>
+      <div class="success-to" id="successTo">to —</div>
+      <button class="btn-gpay" style="max-width:200px;margin:0 auto;" onclick="closeMo('sendSuccess');loadTxn();">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ REQUEST MONEY MODAL ══ -->
+<div class="modal-overlay" id="requestModal" onclick="closeMo('requestModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Request Money</div>
+    <div class="modal-sub">Send a payment request to someone</div>
+    <div id="reqErr" class="modal-err"></div>
+    <div class="form-group">
+      <label>From (username or UPI ID)</label>
+      <input class="form-input" type="text" id="reqFrom" placeholder="their_username"/>
+    </div>
+    <div class="form-group">
+      <label>Amount (₹)</label>
+      <input class="form-input" type="number" id="reqAmount" placeholder="0" min="1" inputmode="decimal"/>
+    </div>
+    <input class="note-input" type="text" id="reqNote" placeholder="Add a note (optional)" style="margin-top:4px;"/>
+    <div class="modal-btn-row">
+      <button class="btn-outline" onclick="closeMo('requestModal')">Cancel</button>
+      <button class="btn-blue" id="reqBtn" onclick="sendRequest()">Request</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PENDING REQUESTS MODAL ══ -->
+<div class="modal-overlay" id="pendingModal" onclick="closeMo('pendingModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Pending Requests</div>
+    <div class="modal-sub">Payment requests sent to you</div>
+    <div id="pendingList">
+      <div class="txn-loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ACCEPT REQUEST (PIN) ══ -->
+<div class="modal-overlay" id="acceptModal" onclick="closeMo('acceptModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Accept Request</div>
+    <div id="acceptSummary" class="req-result"></div>
+    <div class="pin-section-label">UPI PIN</div>
+    <div class="pin-row">
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="ap0"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="ap1"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="ap2"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="ap3"/>
+    </div>
+    <div id="acceptErr" class="modal-err"></div>
+    <div class="modal-btn-row">
+      <button class="btn-outline" onclick="closeMo('acceptModal')">Cancel</button>
+      <button class="btn-green" id="acceptBtn" onclick="executeAccept()">Pay</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHECK BALANCE MODAL ══ -->
+<div class="modal-overlay" id="balModal" onclick="closeMo('balModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Check Balance</div>
+    <div class="modal-sub">Enter UPI PIN to view your balance</div>
+    <div class="pin-row">
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp0"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp1"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp2"/>
+      <input class="pin-box" type="password" maxlength="1" inputmode="numeric" id="bp3"/>
+    </div>
+    <div id="balErr" class="modal-err"></div>
+    <div id="balOk" class="modal-ok"></div>
+    <div class="modal-btn-row">
+      <button class="btn-outline" onclick="closeMo('balModal')">Close</button>
+      <button class="btn-blue" id="balBtn" onclick="checkBalance()">View Balance</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROFILE SHEET ══ -->
+<div class="modal-overlay" id="profileModal" onclick="closeMo('profileModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="profile-info-row">
+      <div class="profile-avatar-lg" id="profileAvatarLg">?</div>
+      <div>
+        <div class="profile-name" id="profileName">—</div>
+        <div class="profile-upi" id="profileUpi">—</div>
+        <div class="profile-bal" id="profileBal">Balance hidden</div>
+      </div>
+    </div>
+    <div class="profile-menu-item" onclick="closeMo('profileModal');window.location.href='https://upi.cupx.in'">
+      <span class="pmi-icon">🔑</span>
+      <span class="pmi-label">Manage UPI PIN</span>
+      <span class="pmi-arrow">›</span>
+    </div>
+    <div class="profile-menu-item" onclick="closeMo('profileModal');window.location.href='https://auth.cupx.in'">
+      <span class="pmi-icon">⚙️</span>
+      <span class="pmi-label">Account Settings</span>
+      <span class="pmi-arrow">›</span>
+    </div>
+    <div class="profile-menu-item" onclick="closeMo('profileModal');window.location.href='https://cupx.in'">
+      <span class="pmi-icon">🏠</span>
+      <span class="pmi-label">CupX Home</span>
+      <span class="pmi-arrow">›</span>
+    </div>
+    <div class="profile-menu-item" onclick="logout()" style="border-bottom:none;">
+      <span class="pmi-icon">⎋</span>
+      <span class="pmi-label" style="color:var(--gpay-red)">Sign Out</span>
+      <span class="pmi-arrow">›</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──
+const SUPABASE_URL = 'https://astnfrwbebzxcxlltpkn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdG5mcndiZWJ6eGN4bGx0cGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjg2OTIsImV4cCI6MjA5MDgwNDY5Mn0.gqp08ROPoDZWyE0KVtV-VCFdTmEXl4HOEL8v7Xjd0I4';
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let txnAll = [];
+let activeFilter = 'all';
+let recipientUser = null;
+let pendingRequestId = null;
+
+// avatar colors
+const COLORS = ['#1A73E8','#34A853','#EA4335','#FBBC04','#8E24AA','#00897B','#E91E63','#F4511E'];
+function colorFor(str) { let h=0; for(let c of (str||'?')) h=(h*31+c.charCodeAt(0))&0xFFFFFF; return COLORS[Math.abs(h)%COLORS.length]; }
+function initial(str) { return (str||'?').charAt(0).toUpperCase(); }
+
+// ── BOOT ──
+(function init(){
+  const saved = localStorage.getItem('cupx_user');
+  if(saved){ try{ currentUser=JSON.parse(saved); showDash(); }catch(e){ showSignin(); } }
+  else showSignin();
+})();
+
+function showSignin(){
+  document.getElementById('signinScreen').style.display='flex';
+  document.getElementById('dashScreen').style.display='none';
+  document.getElementById('bottom-nav') && (document.getElementById('bottom-nav').style.display='none');
+}
+
+function goBack(){
+  if(document.referrer) history.back();
+  else window.location.href='https://cupx.in';
+}
+
+function togglePw(id,btn){
+  const el=document.getElementById(id);
+  const h=el.type==='password';
+  el.type=h?'text':'password';
+  btn.textContent=h?'Hide':'Show';
+}
+
+document.getElementById('siUser').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('siPass').focus();});
+document.getElementById('siPass').addEventListener('keydown',e=>{if(e.key==='Enter')doSignin();});
+
+async function doSignin(){
+  const u=document.getElementById('siUser').value.trim().toLowerCase();
+  const p=document.getElementById('siPass').value;
+  const errEl=document.getElementById('siErr');
+  const btn=document.getElementById('siBtn');
+  errEl.textContent='';
+  if(!u||!p){errEl.textContent='Please fill in all fields';return;}
+  btn.disabled=true;
+  btn.innerHTML='<div class="spinner" style="width:20px;height:20px;border-width:2px;border-color:#fff3;border-top-color:#fff"></div>';
+  const{data,error}=await db.from('users').select('*').eq('username',u).eq('password',p).single();
+  btn.disabled=false;
+  btn.innerHTML='<span id="siBtnTxt">Sign In</span>';
+  if(error||!data){errEl.textContent='Invalid username or password';return;}
+  localStorage.setItem('cupx_user',JSON.stringify(data));
+  currentUser=data;
+  showDash();
+}
+
+async function showDash(){
+  document.getElementById('signinScreen').style.display='none';
+  document.getElementById('dashScreen').style.display='block';
+  const{data}=await db.from('users').select('*').eq('id',currentUser.id).single();
+  if(data){currentUser=data;localStorage.setItem('cupx_user',JSON.stringify(data));}
+  const name=currentUser.full_name||currentUser.username;
+  document.getElementById('bhName').textContent=name;
+  document.getElementById('bhUpi').textContent=currentUser.upi_id||'';
+  document.getElementById('balDisplay').textContent='₹ ••••••';
+  // avatar
+  const av=document.getElementById('headerAvatar');
+  av.textContent=initial(name);
+  av.style.background=`linear-gradient(135deg,${colorFor(currentUser.username)},${colorFor(currentUser.username+'x')})`;
+  loadTxn();
+  loadRecentPeople();
+}
+
+// ── TRANSACTIONS ──
+async function loadTxn(){
+  document.getElementById('txnList').innerHTML='<div class="txn-loading"><div class="spinner"></div></div>';
+  const{data,error}=await db
+    .from('transactions')
+    .select('*')
+    .or(`from_user.eq.${currentUser.username},to_user.eq.${currentUser.username}`)
+    .order('created_at',{ascending:false})
+    .limit(50);
+  if(error||!data){document.getElementById('txnList').innerHTML='<div class="txn-empty">Could not load transactions</div>';return;}
+  txnAll=data;
+  renderTxn();
+}
+
+function filterTxn(f,btn){
+  activeFilter=f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  renderTxn();
+}
+
+function renderTxn(){
+  const u=currentUser.username;
+  let list=txnAll;
+  if(activeFilter==='credit') list=txnAll.filter(t=>t.to_user===u&&t.status!=='pending');
+  else if(activeFilter==='debit') list=txnAll.filter(t=>t.from_user===u&&t.status!=='pending');
+  else if(activeFilter==='pending') list=txnAll.filter(t=>t.status==='pending');
+  if(!list.length){document.getElementById('txnList').innerHTML='<div class="txn-empty">No transactions found</div>';return;}
+  const html=list.map(t=>{
+    const isCredit=t.to_user===u;
+    const isPending=t.status==='pending';
+    const other=isCredit?(t.from_user||'?'):(t.to_user||'?');
+    const amt=parseFloat(t.amount||0).toLocaleString('en-IN',{minimumFractionDigits:2});
+    const dt=t.created_at?new Date(t.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+    let amtCls,amtSign;
+    if(isPending){amtCls='ta-muted';amtSign='';}
+    else if(isCredit){amtCls='ta-green';amtSign='+';}
+    else{amtCls='ta-red';amtSign='-';}
+    const statusCls=t.status==='success'?'ts-success':t.status==='pending'?'ts-pending':'ts-failed';
+    return `<div class="txn-item">
+      <div class="txn-avatar" style="background:${colorFor(other)}">${initial(other)}</div>
+      <div class="txn-info">
+        <div class="txn-title">${isPending?'Request from '+other:(isCredit?'From '+other:'To '+other)}</div>
+        <div class="txn-sub">${dt}${t.type?' · '+t.type:''}</div>
+      </div>
+      <div class="txn-right">
+        <div class="txn-amount ${amtCls}">${amtSign}₹${amt}</div>
+        <div class="txn-status ${statusCls}">${t.status||'—'}</div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('txnList').innerHTML=html;
+}
+
+// ── RECENT PEOPLE ──
+async function loadRecentPeople(){
+  const{data}=await db
+    .from('transactions')
+    .select('from_user,to_user')
+    .or(`from_user.eq.${currentUser.username},to_user.eq.${currentUser.username}`)
+    .order('created_at',{ascending:false})
+    .limit(20);
+  if(!data||!data.length)return;
+  const seen=new Set();
+  const people=[];
+  for(const t of data){
+    const other=t.from_user===currentUser.username?t.to_user:t.from_user;
+    if(other&&!seen.has(other)){seen.add(other);people.push(other);}
+    if(people.length>=5)break;
+  }
+  if(!people.length)return;
+  document.getElementById('peopleSection').style.display='block';
+  document.getElementById('peopleRow').innerHTML=people.map(p=>`
+    <div class="person-item" onclick="quickSendTo('${p}')">
+      <div class="person-avatar" style="background:${colorFor(p)}">${initial(p)}</div>
+      <div class="person-name">${p}</div>
+    </div>`).join('');
+}
+
+// ── MODALS ──
+function closeMo(id,e){
+  if(!e||e.target===document.getElementById(id)){
+    document.getElementById(id).classList.remove('open');
+    clearAllPins();
+  }
+}
+
+function clearAllPins(){
+  ['sp','ap','bp'].forEach(px=>{
+    for(let i=0;i<4;i++){const el=document.getElementById(px+i);if(el)el.value='';}
+  });
+  ['send1Err','send2Err','send3Err','reqErr','acceptErr','balErr','balOk'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.textContent='';
+  });
+}
+
+function getPin(px){return[0,1,2,3].map(i=>{const el=document.getElementById(px+i);return el?el.value:'';}).join('');}
+
+['sp','ap','bp'].forEach(px=>{
+  for(let i=0;i<4;i++){
+    const el=document.getElementById(px+i);
+    if(!el)continue;
+    el.addEventListener('input',()=>{
+      el.value=el.value.replace(/[^0-9]/g,'').slice(-1);
+      if(el.value&&i<3)document.getElementById(px+(i+1)).focus();
+    });
+    el.addEventListener('keydown',e=>{
+      if(e.key==='Backspace'&&!el.value&&i>0)document.getElementById(px+(i-1)).focus();
+    });
+  }
+});
+
+// Amount divider focus effect
+document.getElementById('sendAmount').addEventListener('focus',()=>document.getElementById('amtDivider').classList.add('focused'));
+document.getElementById('sendAmount').addEventListener('blur',()=>document.getElementById('amtDivider').classList.remove('focused'));
+
+// ── SEND MONEY ──
+function openSendModal(){
+  recipientUser=null;
+  document.getElementById('sendRecipient').value='';
+  document.getElementById('recipientResult').style.display='none';
+  document.getElementById('recipientResult').innerHTML='';
+  document.getElementById('sendNext1Btn').disabled=true;
+  document.getElementById('send1Err').textContent='';
+  document.getElementById('sendModal1').classList.add('open');
+  setTimeout(()=>document.getElementById('sendRecipient').focus(),320);
+}
+
+function quickSendTo(username){
+  openSendModal();
+  document.getElementById('sendRecipient').value=username;
+  setTimeout(()=>lookupRecipient(),100);
+}
+
+async function lookupRecipient(){
+  const val=document.getElementById('sendRecipient').value.trim().toLowerCase();
+  const errEl=document.getElementById('send1Err');
+  errEl.textContent='';
+  if(!val){errEl.textContent='Enter a username or UPI ID';return;}
+  // resolve: could be username or upi_id
+  let query=db.from('users').select('id,username,full_name,upi_id');
+  if(val.includes('@')) query=query.eq('upi_id',val);
+  else query=query.eq('username',val);
+  const{data,error}=await query.single();
+  if(error||!data){errEl.textContent='User not found';document.getElementById('sendNext1Btn').disabled=true;return;}
+  if(data.username===currentUser.username){errEl.textContent='Cannot send money to yourself';document.getElementById('sendNext1Btn').disabled=true;return;}
+  recipientUser=data;
+  const name=data.full_name||data.username;
+  document.getElementById('recipientResult').style.display='block';
+  document.getElementById('recipientResult').innerHTML=`
+    <div class="recipient-chip">
+      <div class="rc-avatar" style="background:${colorFor(data.username)}">${initial(name)}</div>
+      <div class="rc-info">
+        <div class="rc-name">${name}</div>
+        <div class="rc-upi">${data.upi_id}</div>
+      </div>
+    </div>`;
+  document.getElementById('sendNext1Btn').disabled=false;
+}
+
+document.getElementById('sendRecipient').addEventListener('keydown',e=>{if(e.key==='Enter')lookupRecipient();});
+
+function goSendStep2(){
+  if(!recipientUser)return;
+  const name=recipientUser.full_name||recipientUser.username;
+  document.getElementById('recipientChip2').innerHTML=`
+    <div class="recipient-chip">
+      <div class="rc-avatar" style="background:${colorFor(recipientUser.username)}">${initial(name)}</div>
+      <div class="rc-info">
+        <div class="rc-name">${name}</div>
+        <div class="rc-upi">${recipientUser.upi_id}</div>
+      </div>
+    </div>`;
+  document.getElementById('sendAmount').value='';
+  document.getElementById('sendNote').value='';
+  document.getElementById('send2Err').textContent='';
+  document.getElementById('sendModal1').classList.remove('open');
+  document.getElementById('sendModal2').classList.add('open');
+  setTimeout(()=>document.getElementById('sendAmount').focus(),320);
+}
+
+function goSendStep3(){
+  const amt=parseFloat(document.getElementById('sendAmount').value);
+  const errEl=document.getElementById('send2Err');
+  errEl.textContent='';
+  if(!amt||amt<=0){errEl.textContent='Enter a valid amount';return;}
+  if(!currentUser.upi_pin){
+    errEl.textContent='Please set your UPI PIN first on upi.cupx.in';return;
+  }
+  const name=recipientUser.full_name||recipientUser.username;
+  document.getElementById('sendSummaryTo').textContent=name+' ('+recipientUser.upi_id+')';
+  document.getElementById('sendSummaryAmt').textContent='₹'+amt.toLocaleString('en-IN',{minimumFractionDigits:2});
+  for(let i=0;i<4;i++){const el=document.getElementById('sp'+i);if(el)el.value='';}
+  document.getElementById('send3Err').textContent='';
+  document.getElementById('sendModal2').classList.remove('open');
+  document.getElementById('sendModal3').classList.add('open');
+  setTimeout(()=>document.getElementById('sp0').focus(),320);
+}
+
+async function executeSend(){
+  const pin=getPin('sp');
+  const errEl=document.getElementById('send3Err');
+  const btn=document.getElementById('sendPayBtn');
+  errEl.textContent='';
+  if(pin.length<4){errEl.textContent='Enter your 4-digit UPI PIN';return;}
+  if(pin!==currentUser.upi_pin){errEl.textContent='Incorrect UPI PIN';return;}
+  const amt=parseFloat(document.getElementById('sendAmount').value);
+  if(parseFloat(currentUser.balance)<amt){errEl.textContent='Insufficient balance';return;}
+  btn.disabled=true;btn.textContent='Processing…';
+  // Deduct from sender
+  const newBal=parseFloat(currentUser.balance)-amt;
+  const{error:e1}=await db.from('users').update({balance:newBal}).eq('id',currentUser.id);
+  if(e1){btn.disabled=false;btn.textContent='Pay Now';errEl.textContent='Transaction failed: '+e1.message;return;}
+  // Add to recipient
+  const{data:recip}=await db.from('users').select('balance').eq('id',recipientUser.id).single();
+  if(recip){
+    const recipBal=parseFloat(recip.balance||0)+amt;
+    await db.from('users').update({balance:recipBal}).eq('id',recipientUser.id);
+  }
+  // Record transaction
+  const note=document.getElementById('sendNote').value.trim();
+  await db.from('transactions').insert([{
+    from_user:currentUser.username,
+    to_user:recipientUser.username,
+    amount:amt,
+    status:'success',
+    type:note||'transfer',
+    created_at:new Date().toISOString()
+  }]);
+  // Send notification to recipient
+  await db.from('notifications').insert([{
+    user:recipientUser.username,
+    title:'Money Received',
+    message:`You received ₹${amt} from ${currentUser.username}`,
+    type:'credit',
+    is_read:false,
+    created_at:new Date().toISOString()
+  }]);
+  currentUser.balance=newBal;
+  localStorage.setItem('cupx_user',JSON.stringify(currentUser));
+  btn.disabled=false;btn.textContent='Pay Now';
+  document.getElementById('sendModal3').classList.remove('open');
+  const name=recipientUser.full_name||recipientUser.username;
+  document.getElementById('successAmt').textContent='₹'+amt.toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('successTo').textContent='to '+name;
+  document.getElementById('sendSuccess').classList.add('open');
+  clearAllPins();
+}
+
+// ── REQUEST MONEY ──
+function openRequestModal(){
+  document.getElementById('reqFrom').value='';
+  document.getElementById('reqAmount').value='';
+  document.getElementById('reqNote').value='';
+  document.getElementById('reqErr').textContent='';
+  document.getElementById('requestModal').classList.add('open');
+  setTimeout(()=>document.getElementById('reqFrom').focus(),320);
+}
+
+async function sendRequest(){
+  const from=document.getElementById('reqFrom').value.trim().toLowerCase();
+  const amt=parseFloat(document.getElementById('reqAmount').value);
+  const note=document.getElementById('reqNote').value.trim();
+  const errEl=document.getElementById('reqErr');
+  const btn=document.getElementById('reqBtn');
+  errEl.textContent='';
+  if(!from){errEl.textContent='Enter a username or UPI ID';return;}
+  if(!amt||amt<=0){errEl.textContent='Enter a valid amount';return;}
+  if(from===currentUser.username||from===currentUser.upi_id){errEl.textContent='Cannot request from yourself';return;}
+  // Lookup user
+  let q=db.from('users').select('username,upi_id');
+  if(from.includes('@')) q=q.eq('upi_id',from);
+  else q=q.eq('username',from);
+  const{data:target}=await q.single();
+  if(!target){errEl.textContent='User not found';return;}
+  btn.disabled=true;btn.textContent='Sending…';
+  // Insert payment_request
+  await db.from('payment_requests').insert([{
+    from_user:target.username,
+    to_user:currentUser.username,
+    amount:amt,
+    status:'pending',
+    note:note||null,
+    created_at:new Date().toISOString()
+  }]);
+  // Notify
+  await db.from('notifications').insert([{
+    user:target.username,
+    title:'Payment Request',
+    message:`${currentUser.username} is requesting ₹${amt} from you`,
+    type:'request',
+    is_read:false,
+    created_at:new Date().toISOString()
+  }]);
+  btn.disabled=false;btn.textContent='Request';
+  errEl.style.color='var(--gpay-green)';
+  errEl.textContent='✓ Request sent successfully!';
+  setTimeout(()=>{document.getElementById('requestModal').classList.remove('open');errEl.style.color='var(--gpay-red)';errEl.textContent='';},1800);
+}
+
+// ── PENDING REQUESTS ──
+async function openPendingModal(){
+  document.getElementById('pendingModal').classList.add('open');
+  document.getElementById('pendingList').innerHTML='<div class="txn-loading"><div class="spinner"></div></div>';
+  const{data,error}=await db
+    .from('payment_requests')
+    .select('*')
+    .eq('from_user',currentUser.username)
+    .eq('status','pending')
+    .order('created_at',{ascending:false});
+  if(error||!data||!data.length){
+    document.getElementById('pendingList').innerHTML='<div class="txn-empty">No pending requests 🎉</div>';return;
+  }
+  document.getElementById('pendingList').innerHTML=data.map(r=>{
+    const amt=parseFloat(r.amount||0).toLocaleString('en-IN',{minimumFractionDigits:2});
+    const dt=r.created_at?new Date(r.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short'}):'';
+    return `<div class="pending-req-item">
+      <div class="txn-avatar" style="background:${colorFor(r.to_user)};width:40px;height:40px;font-size:15px">${initial(r.to_user)}</div>
+      <div class="pr-info">
+        <div class="pr-title">${r.to_user} wants</div>
+        <div class="pr-sub">${dt}${r.note?' · '+r.note:''}</div>
+      </div>
+      <span class="pr-amt">₹${amt}</span>
+      <div class="pr-actions">
+        <button class="pr-accept" onclick="openAcceptModal('${r.id}','${r.to_user}',${r.amount})">Pay</button>
+        <button class="pr-decline" onclick="declineRequest('${r.id}',this)">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAcceptModal(reqId,toUser,amount){
+  pendingRequestId=reqId;
+  const amt=parseFloat(amount).toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('acceptSummary').innerHTML=`
+    <div class="req-result-amt">₹${amt}</div>
+    <div class="req-result-from">Requested by ${toUser}</div>`;
+  for(let i=0;i<4;i++){const el=document.getElementById('ap'+i);if(el)el.value='';}
+  document.getElementById('acceptErr').textContent='';
+  document.getElementById('acceptModal').classList.add('open');
+  setTimeout(()=>document.getElementById('ap0').focus(),320);
+}
+
+async function executeAccept(){
+  const pin=getPin('ap');
+  const errEl=document.getElementById('acceptErr');
+  const btn=document.getElementById('acceptBtn');
+  errEl.textContent='';
+  if(pin.length<4){errEl.textContent='Enter your 4-digit UPI PIN';return;}
+  if(pin!==currentUser.upi_pin){errEl.textContent='Incorrect UPI PIN';return;}
+  btn.disabled=true;btn.textContent='Processing…';
+  // Fetch request
+  const{data:req}=await db.from('payment_requests').select('*').eq('id',pendingRequestId).single();
+  if(!req){errEl.textContent='Request not found';btn.disabled=false;btn.textContent='Pay';return;}
+  const amt=parseFloat(req.amount);
+  if(parseFloat(currentUser.balance)<amt){errEl.textContent='Insufficient balance';btn.disabled=false;btn.textContent='Pay';return;}
+  // Deduct
+  const newBal=parseFloat(currentUser.balance)-amt;
+  await db.from('users').update({balance:newBal}).eq('id',currentUser.id);
+  // Credit to requester
+  const{data:reqUser}=await db.from('users').select('id,balance').eq('username',req.to_user).single();
+  if(reqUser){await db.from('users').update({balance:parseFloat(reqUser.balance||0)+amt}).eq('id',reqUser.id);}
+  // Record txn
+  await db.from('transactions').insert([{
+    from_user:currentUser.username,
+    to_user:req.to_user,
+    amount:amt,
+    status:'success',
+    type:'request_payment',
+    created_at:new Date().toISOString()
+  }]);
+  // Update request status
+  await db.from('payment_requests').update({status:'completed'}).eq('id',pendingRequestId);
+  currentUser.balance=newBal;
+  localStorage.setItem('cupx_user',JSON.stringify(currentUser));
+  btn.disabled=false;btn.textContent='Pay';
+  document.getElementById('acceptModal').classList.remove('open');
+  document.getElementById('pendingModal').classList.remove('open');
+  clearAllPins();
+  loadTxn();
+  // Show mini success
+  alert('✓ Payment of ₹'+amt.toLocaleString('en-IN',{minimumFractionDigits:2})+' sent to '+req.to_user);
+}
+
+async function declineRequest(reqId,btn){
+  btn.disabled=true;
+  await db.from('payment_requests').update({status:'declined'}).eq('id',reqId);
+  btn.closest('.pending-req-item').remove();
+}
+
+// ── CHECK BALANCE ──
+function openCheckBal(){
+  if(!currentUser.upi_pin){
+    alert('Please set your UPI PIN first on upi.cupx.in');
+    window.location.href='https://upi.cupx.in';return;
+  }
+  document.getElementById('balErr').textContent='';
+  document.getElementById('balOk').textContent='';
+  for(let i=0;i<4;i++){const el=document.getElementById('bp'+i);if(el)el.value='';}
+  document.getElementById('balModal').classList.add('open');
+  setTimeout(()=>document.getElementById('bp0').focus(),320);
+}
+
+async function checkBalance(){
+  const pin=getPin('bp');
+  const errEl=document.getElementById('balErr');
+  const okEl=document.getElementById('balOk');
+  const btn=document.getElementById('balBtn');
+  errEl.textContent='';okEl.textContent='';
+  if(pin.length<4){errEl.textContent='Enter your 4-digit UPI PIN';return;}
+  btn.disabled=true;btn.textContent='Verifying…';
+  const{data}=await db.from('users').select('balance,upi_pin').eq('id',currentUser.id).single();
+  btn.disabled=false;btn.textContent='View Balance';
+  if(!data){errEl.textContent='Could not fetch balance';return;}
+  if(pin!==data.upi_pin){errEl.textContent='Incorrect UPI PIN';return;}
+  currentUser.balance=data.balance;
+  localStorage.setItem('cupx_user',JSON.stringify(currentUser));
+  const amt=parseFloat(data.balance||0).toLocaleString('en-IN',{minimumFractionDigits:2});
+  okEl.textContent='✓ Available Balance: ₹'+amt;
+  document.getElementById('balDisplay').textContent='₹ '+amt;
+}
+
+// ── PROFILE ──
+function openProfile(){
+  const name=currentUser.full_name||currentUser.username;
+  document.getElementById('profileName').textContent=name;
+  document.getElementById('profileUpi').textContent=currentUser.upi_id||'—';
+  document.getElementById('profileBal').textContent='Balance hidden · tap Check Balance';
+  const av=document.getElementById('profileAvatarLg');
+  av.textContent=initial(name);
+  av.style.background=`linear-gradient(135deg,${colorFor(currentUser.username)},${colorFor(currentUser.username+'x')})`;
+  document.getElementById('profileModal').classList.add('open');
+}
+
+// ── LOGOUT ──
+function logout(){
+  if(confirm('Sign out of CPay?')){
+    localStorage.removeItem('cupx_user');
+    currentUser=null;txnAll=[];
+    showSignin();
+  }
+}
+</script>
 </body>
 </html>
