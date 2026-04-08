@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>CPay – CupX Payments</title>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Display:wght@400;500;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap');
 
 :root {
@@ -35,7 +37,6 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── HEADER ── */
 .header {
   background: var(--gpay-surface);
   height: 60px;
@@ -48,116 +49,57 @@ body {
   top: 0;
   z-index: 100;
 }
-
 .header-left { display: flex; align-items: center; gap: 10px; }
-
 .back-btn {
-  background: none;
-  border: none;
-  color: var(--gpay-muted);
-  width: 36px; height: 36px;
-  border-radius: 50%;
+  background: none; border: none; color: var(--gpay-muted);
+  width: 36px; height: 36px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  font-size: 18px;
-  transition: background .15s;
+  cursor: pointer; font-size: 18px; transition: background .15s;
 }
 .back-btn:hover { background: var(--gpay-hover); }
-
-/* CPay Logo */
-.cpay-logo {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-.cpay-logo-c {
-  font-family: 'Sora', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-.cpay-logo-pay {
-  font-family: 'Sora', sans-serif;
-  font-size: 22px;
-  font-weight: 400;
-  color: var(--gpay-muted);
-}
+.cpay-logo { display: flex; align-items: center; gap: 2px; }
+.cpay-logo-c { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
+.cpay-logo-pay { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 400; color: var(--gpay-muted); }
 .c-blue  { color: var(--gpay-blue); }
 .c-red   { color: var(--gpay-red); }
 .c-yellow{ color: var(--gpay-yellow); }
 .c-green { color: var(--gpay-green); }
-
 .header-avatar {
-  width: 34px; height: 34px;
-  border-radius: 50%;
+  width: 34px; height: 34px; border-radius: 50%;
   background: linear-gradient(135deg, var(--gpay-blue), #4285F4);
-  color: white;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  flex-shrink: 0;
+  color: white; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0;
 }
 
-/* ── MAIN ── */
 .main { flex: 1; padding: 0 0 80px; max-width: 480px; margin: 0 auto; width: 100%; }
 
-/* ── SIGNIN SCREEN ── */
+/* SIGNIN */
 #signinScreen {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 20px;
-  min-height: calc(100vh - 60px);
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 24px 20px; min-height: calc(100vh - 60px);
 }
-
 .signin-card {
-  background: white;
-  border-radius: 24px;
-  padding: 36px 28px;
-  width: 100%;
-  max-width: 380px;
+  background: white; border-radius: 24px; padding: 36px 28px;
+  width: 100%; max-width: 380px;
   box-shadow: 0 2px 20px rgba(0,0,0,0.08);
 }
-
-.signin-logo-area {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
+.signin-logo-area { text-align: center; margin-bottom: 30px; }
 .signin-logo-area .big-logo {
-  font-size: 38px;
-  font-family: 'Sora', sans-serif;
-  font-weight: 700;
-  margin-bottom: 8px;
-  letter-spacing: -1px;
+  font-size: 38px; font-family: 'Sora', sans-serif; font-weight: 700;
+  margin-bottom: 8px; letter-spacing: -1px;
 }
-
-.signin-logo-area p {
-  font-size: 14px;
-  color: var(--gpay-muted);
-}
-
+.signin-logo-area p { font-size: 14px; color: var(--gpay-muted); }
 .form-group { margin-bottom: 18px; }
 .form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--gpay-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
-
 .form-input {
-  width: 100%;
-  height: 48px;
-  padding: 0 16px;
-  border: 1.5px solid var(--gpay-border);
-  border-radius: 12px;
-  font-size: 15px;
-  color: var(--gpay-text);
-  background: var(--gpay-bg);
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
+  width: 100%; height: 48px; padding: 0 16px;
+  border: 1.5px solid var(--gpay-border); border-radius: 12px;
+  font-size: 15px; color: var(--gpay-text); background: var(--gpay-bg);
+  outline: none; transition: border-color .2s, box-shadow .2s;
   font-family: 'DM Sans', sans-serif;
 }
 .form-input:focus { border-color: var(--gpay-blue); box-shadow: 0 0 0 3px rgba(26,115,232,0.12); background: white; }
-
 .pass-wrap { position: relative; }
 .pass-toggle {
   position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
@@ -165,122 +107,69 @@ body {
   font-size: 12px; font-weight: 600; color: var(--gpay-blue);
   font-family: 'DM Sans', sans-serif;
 }
-
 .btn-gpay {
-  width: 100%; height: 48px;
-  background: var(--gpay-blue);
-  color: white; border: none;
-  border-radius: 24px;
-  font-size: 15px; font-weight: 600;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  transition: background .2s, box-shadow .2s;
+  width: 100%; height: 48px; background: var(--gpay-blue);
+  color: white; border: none; border-radius: 24px;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: background .2s, box-shadow .2s;
   display: flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn-gpay:hover { background: var(--gpay-blue-dark); box-shadow: 0 2px 8px rgba(26,115,232,0.3); }
 .btn-gpay:disabled { opacity: .6; cursor: not-allowed; }
-
 .signin-footer { text-align: center; margin-top: 20px; font-size: 13px; color: var(--gpay-muted); }
 .signin-footer a { color: var(--gpay-blue); text-decoration: none; font-weight: 500; }
-
 .err-msg { color: var(--gpay-red); font-size: 13px; margin-bottom: 14px; min-height: 18px; text-align: center; }
 
-/* ── DASHBOARD ── */
+/* DASHBOARD */
 #dashScreen { display: none; }
 
-/* Balance Hero */
 .balance-hero {
   background: linear-gradient(160deg, #1A73E8 0%, #0D47A1 100%);
-  padding: 28px 20px 32px;
-  color: white;
-  position: relative;
-  overflow: hidden;
+  padding: 28px 20px 32px; color: white;
+  position: relative; overflow: hidden;
 }
 .balance-hero::after {
-  content: '';
-  position: absolute;
-  bottom: -60px; right: -40px;
-  width: 180px; height: 180px;
-  border-radius: 50%;
+  content: ''; position: absolute; bottom: -60px; right: -40px;
+  width: 180px; height: 180px; border-radius: 50%;
   background: rgba(255,255,255,0.06);
 }
 .balance-hero::before {
-  content: '';
-  position: absolute;
-  top: -40px; left: -30px;
-  width: 130px; height: 130px;
-  border-radius: 50%;
+  content: ''; position: absolute; top: -40px; left: -30px;
+  width: 130px; height: 130px; border-radius: 50%;
   background: rgba(255,255,255,0.04);
 }
-
 .bh-greeting { font-size: 13px; opacity: .8; margin-bottom: 3px; }
 .bh-name { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; margin-bottom: 20px; }
-
 .bh-balance-box {
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 16px;
-  padding: 16px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: background .2s;
+  background: rgba(255,255,255,0.12); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2); border-radius: 16px;
+  padding: 16px 18px; display: flex; align-items: center;
+  justify-content: space-between; cursor: pointer; transition: background .2s;
 }
 .bh-balance-box:hover { background: rgba(255,255,255,0.18); }
-
-.bh-bal-left {}
 .bh-bal-label { font-size: 11px; opacity: .75; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px; }
 .bh-bal-amount { font-family: 'Sora', sans-serif; font-size: 26px; font-weight: 700; }
 .bh-bal-upi { font-size: 12px; opacity: .7; margin-top: 3px; }
-
 .bh-check-btn {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-  padding: 8px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-  white-space: nowrap;
-  flex-shrink: 0;
+  background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+  color: white; padding: 8px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; white-space: nowrap; flex-shrink: 0;
   transition: background .15s;
 }
 .bh-check-btn:hover { background: rgba(255,255,255,0.3); }
 
-/* Quick Actions */
 .section { padding: 20px 16px 0; }
 .section-title { font-size: 13px; font-weight: 600; color: var(--gpay-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
 
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 6px;
-}
-
+.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 6px; }
 .qa-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  padding: 10px 4px;
-  border-radius: 14px;
-  transition: background .15s;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; padding: 10px 4px; border-radius: 14px; transition: background .15s;
 }
 .qa-item:hover { background: var(--gpay-hover); }
 .qa-item:active { transform: scale(.95); }
-
-.qa-icon {
-  width: 52px; height: 52px;
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 22px;
-}
+.qa-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
 .qa-blue   { background: #E8F0FE; }
 .qa-green  { background: #E6F4EA; }
 .qa-red    { background: #FCE8E6; }
@@ -289,425 +178,349 @@ body {
 .qa-teal   { background: #E0F2F1; }
 .qa-pink   { background: #FCE4EC; }
 .qa-orange { background: #FFF3E0; }
-
 .qa-label { font-size: 11px; font-weight: 500; color: var(--gpay-text); text-align: center; line-height: 1.3; }
 
-/* People row */
+.people-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.people-tabs { display: flex; gap: 6px; }
+.people-tab {
+  padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid var(--gpay-border);
+  background: white; color: var(--gpay-muted); transition: all .15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.people-tab.active { background: #E8F0FE; color: var(--gpay-blue); border-color: #C5D8FC; }
+
 .people-row {
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  padding: 4px 0 8px;
-  -webkit-overflow-scrolling: touch;
+  display: flex; gap: 16px; overflow-x: auto;
+  padding: 4px 0 8px; -webkit-overflow-scrolling: touch;
 }
 .people-row::-webkit-scrollbar { display: none; }
-
-.person-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  flex-shrink: 0;
-}
+.person-item { display: flex; flex-direction: column; align-items: center; gap: 6px; cursor: pointer; flex-shrink: 0; }
 .person-avatar {
-  width: 48px; height: 48px;
-  border-radius: 50%;
+  width: 48px; height: 48px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
+  font-size: 18px; font-weight: 700; color: white; position: relative;
+}
+.person-avatar .biz-badge {
+  position: absolute; bottom: -2px; right: -2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--gpay-yellow); border: 2px solid white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
 }
 .person-name { font-size: 11px; color: var(--gpay-text); font-weight: 500; text-align: center; max-width: 56px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Cards */
 .card {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid var(--gpay-border);
-  overflow: hidden;
-  margin-bottom: 12px;
+  background: white; border-radius: 16px; border: 1px solid var(--gpay-border);
+  overflow: hidden; margin-bottom: 12px;
   box-shadow: 0 1px 6px rgba(0,0,0,0.04);
 }
-
-.card-header {
-  padding: 14px 16px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+.card-header { padding: 14px 16px 10px; display: flex; align-items: center; justify-content: space-between; }
 .card-title { font-size: 15px; font-weight: 600; }
 .card-link { font-size: 13px; color: var(--gpay-blue); font-weight: 500; cursor: pointer; }
 
-/* Txn items */
 .txn-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  border-top: 1px solid var(--gpay-border);
-  transition: background .15s;
-  cursor: pointer;
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 16px; border-top: 1px solid var(--gpay-border);
+  transition: background .15s; cursor: pointer;
 }
 .txn-item:hover { background: var(--gpay-hover); }
-
 .txn-avatar {
-  width: 42px; height: 42px;
-  border-radius: 50%;
+  width: 42px; height: 42px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  font-weight: 700;
-  color: white;
-  flex-shrink: 0;
+  font-size: 16px; font-weight: 700; color: white; flex-shrink: 0; position: relative;
 }
-
+.txn-avatar .biz-badge-sm {
+  position: absolute; bottom: -1px; right: -1px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: var(--gpay-yellow); border: 2px solid white;
+  font-size: 7px; display: flex; align-items: center; justify-content: center;
+}
 .txn-info { flex: 1; min-width: 0; }
 .txn-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .txn-sub { font-size: 12px; color: var(--gpay-muted); margin-top: 2px; }
-
 .txn-right { text-align: right; flex-shrink: 0; }
 .txn-amount { font-size: 15px; font-weight: 600; font-family: 'Sora', sans-serif; }
 .ta-green { color: var(--gpay-green); }
 .ta-red   { color: var(--gpay-red); }
 .ta-muted { color: var(--gpay-muted); }
-
 .txn-status { font-size: 11px; margin-top: 2px; }
 .ts-success { color: var(--gpay-green); }
 .ts-pending { color: #F9AB00; }
 .ts-failed  { color: var(--gpay-red); }
-
 .txn-empty { padding: 28px 16px; text-align: center; color: var(--gpay-muted); font-size: 14px; }
 .txn-loading { padding: 24px 16px; text-align: center; }
 
-/* Filter chips */
-.filter-chips {
-  display: flex;
-  gap: 8px;
-  padding: 10px 16px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
+.filter-chips { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .filter-chips::-webkit-scrollbar { display: none; }
-
 .chip {
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  border: 1.5px solid var(--gpay-border);
-  background: white;
-  color: var(--gpay-muted);
-  white-space: nowrap;
-  transition: all .15s;
-  font-family: 'DM Sans', sans-serif;
+  padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 500;
+  cursor: pointer; border: 1.5px solid var(--gpay-border);
+  background: white; color: var(--gpay-muted); white-space: nowrap;
+  transition: all .15s; font-family: 'DM Sans', sans-serif;
 }
 .chip.active { background: #E8F0FE; color: var(--gpay-blue); border-color: #C5D8FC; font-weight: 600; }
 
-/* Spinner */
 .spinner {
-  display: inline-block;
-  width: 24px; height: 24px;
-  border: 2.5px solid var(--gpay-border);
-  border-top-color: var(--gpay-blue);
-  border-radius: 50%;
-  animation: spin .8s linear infinite;
+  display: inline-block; width: 24px; height: 24px;
+  border: 2.5px solid var(--gpay-border); border-top-color: var(--gpay-blue);
+  border-radius: 50%; animation: spin .8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Bottom Nav */
-.bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: white;
-  border-top: 1px solid var(--gpay-border);
-  display: none;
-  justify-content: space-around;
-  padding: 8px 0 env(safe-area-inset-bottom, 8px);
-  z-index: 100;
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  cursor: pointer;
-  padding: 6px 16px;
-  border-radius: 10px;
-  transition: background .15s;
-  flex: 1;
-}
-.nav-item:hover { background: var(--gpay-hover); }
-.nav-icon { font-size: 20px; line-height: 1; }
-.nav-label { font-size: 10px; font-weight: 500; color: var(--gpay-muted); }
-.nav-item.active .nav-label { color: var(--gpay-blue); font-weight: 600; }
-
-/* ── MODALS ── */
+/* MODALS */
 .modal-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 200;
-  align-items: flex-end;
-  justify-content: center;
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 200;
+  align-items: flex-end; justify-content: center;
 }
 .modal-overlay.open { display: flex; }
-
 .modal-sheet {
-  background: white;
-  border-radius: 24px 24px 0 0;
-  padding: 24px 22px 40px;
-  width: 100%; max-width: 480px;
+  background: white; border-radius: 24px 24px 0 0;
+  padding: 24px 22px 40px; width: 100%; max-width: 480px;
   animation: slideUp .3s cubic-bezier(.32,.72,0,1);
-  max-height: 92vh;
-  overflow-y: auto;
+  max-height: 92vh; overflow-y: auto;
 }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
 .modal-handle { width: 36px; height: 4px; background: var(--gpay-border); border-radius: 2px; margin: 0 auto 20px; }
 .modal-title { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 600; color: var(--gpay-text); margin-bottom: 4px; }
 .modal-sub { font-size: 13px; color: var(--gpay-muted); margin-bottom: 20px; }
 .modal-err { color: var(--gpay-red); font-size: 13px; text-align: center; min-height: 18px; margin-bottom: 10px; }
 .modal-ok { color: var(--gpay-green); font-size: 14px; font-weight: 600; text-align: center; margin-bottom: 10px; }
 
-/* Amount input */
-.amount-display {
-  text-align: center;
-  padding: 20px 0 10px;
-}
+.amount-display { text-align: center; padding: 20px 0 10px; }
 .amount-currency { font-size: 28px; color: var(--gpay-muted); vertical-align: super; }
 .amount-input {
-  font-family: 'Sora', sans-serif;
-  font-size: 52px;
-  font-weight: 700;
-  color: var(--gpay-text);
-  border: none;
-  outline: none;
-  width: 100%;
-  text-align: center;
-  background: transparent;
+  font-family: 'Sora', sans-serif; font-size: 52px; font-weight: 700;
+  color: var(--gpay-text); border: none; outline: none;
+  width: 100%; text-align: center; background: transparent;
   caret-color: var(--gpay-blue);
 }
 .amount-input::placeholder { color: #C5C7CA; }
-
-.amount-divider {
-  height: 2px;
-  background: var(--gpay-border);
-  border-radius: 2px;
-  margin-bottom: 20px;
-  transition: background .2s;
-}
+.amount-divider { height: 2px; background: var(--gpay-border); border-radius: 2px; margin-bottom: 20px; transition: background .2s; }
 .amount-divider.focused { background: var(--gpay-blue); }
 
-/* Recipient display */
 .recipient-chip {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: var(--gpay-bg);
-  border-radius: 14px;
-  padding: 12px 16px;
-  margin-bottom: 18px;
+  display: flex; align-items: center; gap: 12px;
+  background: var(--gpay-bg); border-radius: 14px; padding: 12px 16px; margin-bottom: 18px;
 }
-.rc-avatar {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px; font-weight: 700;
-  color: white;
-  flex-shrink: 0;
-}
-.rc-info {}
+.rc-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; flex-shrink: 0; }
 .rc-name { font-size: 15px; font-weight: 600; }
 .rc-upi { font-size: 12px; color: var(--gpay-muted); }
 
-/* Note input */
 .note-input {
-  width: 100%;
-  height: 44px;
-  padding: 0 16px;
-  border: 1.5px solid var(--gpay-border);
-  border-radius: 12px;
-  font-size: 14px;
-  color: var(--gpay-text);
-  background: var(--gpay-bg);
-  outline: none;
-  font-family: 'DM Sans', sans-serif;
-  transition: border-color .2s;
-  margin-bottom: 18px;
+  width: 100%; height: 44px; padding: 0 16px;
+  border: 1.5px solid var(--gpay-border); border-radius: 12px;
+  font-size: 14px; color: var(--gpay-text); background: var(--gpay-bg);
+  outline: none; font-family: 'DM Sans', sans-serif;
+  transition: border-color .2s; margin-bottom: 18px;
 }
 .note-input:focus { border-color: var(--gpay-blue); background: white; }
 
-/* UPI ID input */
-.upi-search-wrap {
-  position: relative;
-  margin-bottom: 8px;
-}
+.upi-search-wrap { position: relative; margin-bottom: 8px; }
 .upi-search-input {
-  width: 100%;
-  height: 48px;
-  padding: 0 50px 0 16px;
-  border: 1.5px solid var(--gpay-border);
-  border-radius: 12px;
-  font-size: 15px;
-  color: var(--gpay-text);
-  background: var(--gpay-bg);
-  outline: none;
-  font-family: 'DM Sans', sans-serif;
-  transition: border-color .2s;
+  width: 100%; height: 48px; padding: 0 50px 0 16px;
+  border: 1.5px solid var(--gpay-border); border-radius: 12px;
+  font-size: 15px; color: var(--gpay-text); background: var(--gpay-bg);
+  outline: none; font-family: 'DM Sans', sans-serif; transition: border-color .2s;
 }
 .upi-search-input:focus { border-color: var(--gpay-blue); background: white; }
 .upi-search-btn {
   position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
-  background: var(--gpay-blue); color: white;
-  border: none; border-radius: 8px;
+  background: var(--gpay-blue); color: white; border: none; border-radius: 8px;
   padding: 6px 12px; font-size: 13px; font-weight: 600;
   cursor: pointer; font-family: 'DM Sans', sans-serif;
 }
 
-/* PIN row */
 .pin-section-label { font-size: 12px; font-weight: 600; color: var(--gpay-muted); text-align: center; margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
-
 .pin-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 16px; }
 .pin-box {
-  width: 50px; height: 56px;
-  border: 2px solid var(--gpay-border);
-  border-radius: 12px;
-  text-align: center;
-  font-size: 22px; font-weight: 700;
-  color: var(--gpay-text);
-  background: var(--gpay-bg);
-  outline: none;
-  transition: border-color .15s;
-  font-family: 'Sora', sans-serif;
+  width: 50px; height: 56px; border: 2px solid var(--gpay-border);
+  border-radius: 12px; text-align: center; font-size: 22px; font-weight: 700;
+  color: var(--gpay-text); background: var(--gpay-bg); outline: none;
+  transition: border-color .15s; font-family: 'Sora', sans-serif;
   -webkit-text-security: disc;
 }
 .pin-box:focus { border-color: var(--gpay-blue); background: white; box-shadow: 0 0 0 3px rgba(26,115,232,0.1); }
 
-/* Buttons */
 .modal-btn-row { display: flex; gap: 10px; margin-top: 6px; }
 .btn-outline {
-  flex: 1; height: 44px;
-  background: white; color: var(--gpay-text);
-  border: 1.5px solid var(--gpay-border);
-  border-radius: 22px; font-size: 14px; font-weight: 500;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: background .15s;
+  flex: 1; height: 44px; background: white; color: var(--gpay-text);
+  border: 1.5px solid var(--gpay-border); border-radius: 22px;
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: background .15s;
 }
 .btn-outline:hover { background: var(--gpay-hover); }
 .btn-blue {
-  flex: 2; height: 44px;
-  background: var(--gpay-blue); color: white;
-  border: none; border-radius: 22px;
-  font-size: 14px; font-weight: 600;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: background .15s;
+  flex: 2; height: 44px; background: var(--gpay-blue); color: white;
+  border: none; border-radius: 22px; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .15s;
 }
 .btn-blue:hover { background: var(--gpay-blue-dark); }
 .btn-blue:disabled { opacity: .6; cursor: not-allowed; }
 .btn-green {
-  flex: 2; height: 44px;
-  background: var(--gpay-green); color: white;
-  border: none; border-radius: 22px;
-  font-size: 14px; font-weight: 600;
-  cursor: pointer; font-family: 'DM Sans', sans-serif;
-  transition: background .15s;
+  flex: 2; height: 44px; background: var(--gpay-green); color: white;
+  border: none; border-radius: 22px; font-size: 14px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background .15s;
 }
 .btn-green:hover { background: #2D9249; }
 .btn-green:disabled { opacity: .6; cursor: not-allowed; }
 
-/* Success animation */
-.success-screen {
-  text-align: center;
-  padding: 20px 0 10px;
-}
+.success-screen { text-align: center; padding: 20px 0 10px; }
 .success-circle {
-  width: 80px; height: 80px;
-  border-radius: 50%;
-  background: #E6F4EA;
+  width: 80px; height: 80px; border-radius: 50%; background: #E6F4EA;
   display: flex; align-items: center; justify-content: center;
-  font-size: 36px;
-  margin: 0 auto 16px;
+  font-size: 36px; margin: 0 auto 16px;
   animation: popIn .4s cubic-bezier(.175,.885,.32,1.275);
 }
 @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 .success-title { font-family: 'Sora', sans-serif; font-size: 22px; font-weight: 700; color: var(--gpay-green); margin-bottom: 6px; }
 .success-amt { font-family: 'Sora', sans-serif; font-size: 32px; font-weight: 700; color: var(--gpay-text); margin-bottom: 4px; }
-.success-to { font-size: 14px; color: var(--gpay-muted); margin-bottom: 20px; }
+.success-to { font-size: 14px; color: var(--gpay-muted); margin-bottom: 8px; }
+.success-ref { font-size: 12px; color: var(--gpay-muted); font-family: monospace; margin-bottom: 20px; }
 
-/* Request result */
-.req-result {
-  background: var(--gpay-bg);
-  border-radius: 14px;
-  padding: 16px;
-  text-align: center;
-  margin-bottom: 18px;
+.receipt-actions { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; }
+.receipt-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1.5px solid var(--gpay-border);
+  background: white; color: var(--gpay-text); font-family: 'DM Sans', sans-serif;
+  transition: all .15s;
 }
+.receipt-btn:hover { background: var(--gpay-hover); }
+.receipt-btn.blue { background: var(--gpay-blue); color: white; border-color: var(--gpay-blue); }
+.receipt-btn.blue:hover { background: var(--gpay-blue-dark); }
+
+.req-result { background: var(--gpay-bg); border-radius: 14px; padding: 16px; text-align: center; margin-bottom: 18px; }
 .req-result-amt { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; color: var(--gpay-text); }
 .req-result-from { font-size: 13px; color: var(--gpay-muted); margin-top: 4px; }
 
-/* Pending requests */
-.pending-req-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-top: 1px solid var(--gpay-border);
-}
+.pending-req-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--gpay-border); }
 .pr-info { flex: 1; }
 .pr-title { font-size: 14px; font-weight: 500; }
 .pr-sub { font-size: 12px; color: var(--gpay-muted); }
 .pr-amt { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 600; color: var(--gpay-text); margin-right: 8px; }
 .pr-actions { display: flex; gap: 6px; }
-.pr-accept {
-  background: var(--gpay-green); color: white;
-  border: none; padding: 6px 12px; border-radius: 16px;
-  font-size: 12px; font-weight: 600; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-}
-.pr-decline {
-  background: white; color: var(--gpay-red);
-  border: 1.5px solid #FECDD3; padding: 6px 12px; border-radius: 16px;
-  font-size: 12px; font-weight: 600; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-}
+.pr-accept { background: var(--gpay-green); color: white; border: none; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.pr-decline { background: white; color: var(--gpay-red); border: 1.5px solid #FECDD3; padding: 6px 12px; border-radius: 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; }
 
-/* Profile sheet */
+/* PROFILE */
 .profile-info-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 6px 0 20px;
-  border-bottom: 1px solid var(--gpay-border);
-  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 14px;
+  padding: 6px 0 20px; border-bottom: 1px solid var(--gpay-border); margin-bottom: 16px;
 }
 .profile-avatar-lg {
-  width: 58px; height: 58px;
-  border-radius: 50%;
+  width: 58px; height: 58px; border-radius: 50%;
   background: linear-gradient(135deg, var(--gpay-blue), #4285F4);
-  color: white;
-  display: flex; align-items: center; justify-content: center;
+  color: white; display: flex; align-items: center; justify-content: center;
   font-size: 22px; font-weight: 700;
 }
 .profile-name { font-size: 18px; font-weight: 600; }
 .profile-upi { font-size: 13px; color: var(--gpay-muted); }
 .profile-bal { font-size: 13px; color: var(--gpay-green); font-weight: 500; margin-top: 2px; }
+.profile-type-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600;
+  margin-top: 4px;
+}
+.ptb-personal { background: #E8F0FE; color: var(--gpay-blue); }
+.ptb-business { background: #FEF7E0; color: #B06000; }
 
 .profile-menu-item {
   display: flex; align-items: center; gap: 14px;
-  padding: 14px 4px;
-  border-bottom: 1px solid var(--gpay-border);
-  cursor: pointer;
-  transition: background .15s;
-  border-radius: 8px;
+  padding: 14px 4px; border-bottom: 1px solid var(--gpay-border);
+  cursor: pointer; transition: background .15s; border-radius: 8px;
 }
 .profile-menu-item:hover { background: var(--gpay-hover); padding-left: 8px; }
 .pmi-icon { font-size: 20px; width: 28px; text-align: center; }
 .pmi-label { font-size: 14px; font-weight: 500; flex: 1; }
 .pmi-arrow { color: var(--gpay-muted); font-size: 16px; }
+
+/* QR MODAL */
+.qr-container {
+  display: flex; flex-direction: column; align-items: center; padding: 10px 0 20px;
+}
+.qr-box {
+  background: white; border: 2px solid var(--gpay-border);
+  border-radius: 20px; padding: 20px; margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+.qr-name { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 4px; }
+.qr-upi { font-size: 13px; color: var(--gpay-muted); text-align: center; margin-bottom: 16px; }
+.qr-footer-brand { font-size: 11px; color: var(--gpay-muted); text-align: center; margin-top: 12px; }
+
+.scan-area {
+  width: 100%; background: var(--gpay-bg); border-radius: 16px;
+  padding: 20px; text-align: center; margin-top: 8px;
+}
+.scan-video { width: 100%; border-radius: 12px; max-height: 220px; object-fit: cover; }
+.scan-hint { font-size: 13px; color: var(--gpay-muted); margin-top: 10px; }
+
+/* PERSON HISTORY MODAL */
+.ph-header {
+  display: flex; align-items: center; gap: 14px;
+  background: var(--gpay-bg); border-radius: 16px;
+  padding: 14px 16px; margin-bottom: 16px;
+}
+.ph-avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; color: white; flex-shrink: 0; position: relative; }
+.ph-name { font-size: 17px; font-weight: 700; }
+.ph-upi { font-size: 12px; color: var(--gpay-muted); margin-top: 2px; }
+.ph-type-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; }
+.ph-stats { display: flex; gap: 10px; margin-bottom: 16px; }
+.ph-stat { flex: 1; background: var(--gpay-bg); border-radius: 12px; padding: 12px; text-align: center; }
+.ph-stat-val { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; }
+.ph-stat-lbl { font-size: 11px; color: var(--gpay-muted); margin-top: 2px; }
+.ph-txn-list { max-height: 340px; overflow-y: auto; }
+.ph-txn-list::-webkit-scrollbar { display: none; }
+.ph-send-btn {
+  width: 100%; height: 46px; background: var(--gpay-blue); color: white;
+  border: none; border-radius: 23px; font-size: 15px; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; margin-top: 16px;
+  transition: background .15s;
+}
+.ph-send-btn:hover { background: var(--gpay-blue-dark); }
+
+/* RECEIPT TEMPLATE (hidden, used for capture) */
+#receiptTemplate {
+  position: fixed; left: -9999px; top: 0;
+  width: 360px; background: white;
+  font-family: 'DM Sans', sans-serif;
+}
+.receipt-card {
+  background: white; padding: 0; border-radius: 0; overflow: hidden;
+}
+.receipt-header {
+  background: linear-gradient(135deg, #1A73E8, #0D47A1);
+  padding: 24px 24px 20px; color: white; text-align: center;
+}
+.receipt-logo { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; }
+.receipt-tagline { font-size: 11px; opacity: .75; letter-spacing: .3px; }
+.receipt-status-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+  padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  margin-top: 14px;
+}
+.receipt-body { padding: 24px; }
+.receipt-amount-row { text-align: center; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1.5px dashed #E8EAED; }
+.receipt-amt-label { font-size: 12px; color: #5F6368; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.receipt-amt-val { font-family: 'Sora', sans-serif; font-size: 40px; font-weight: 700; color: #202124; line-height: 1; }
+.receipt-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.receipt-row-label { font-size: 12px; color: #5F6368; font-weight: 500; }
+.receipt-row-val { font-size: 13px; font-weight: 600; color: #202124; text-align: right; max-width: 55%; word-break: break-all; }
+.receipt-divider { height: 1px; background: #E8EAED; margin: 16px 0; }
+.receipt-ref { text-align: center; margin-bottom: 16px; }
+.receipt-ref-val { font-size: 13px; font-family: monospace; color: #1A73E8; font-weight: 600; letter-spacing: .5px; }
+.receipt-ref-lbl { font-size: 11px; color: #5F6368; margin-bottom: 4px; }
+.receipt-qr-row { display: flex; justify-content: center; margin-bottom: 16px; }
+.receipt-qr-box { background: #F8F9FA; border-radius: 12px; padding: 12px; display: inline-block; }
+.receipt-footer {
+  background: #F8F9FA; padding: 14px 24px; text-align: center;
+  border-top: 1px solid #E8EAED;
+}
+.receipt-footer-brand { font-size: 12px; font-weight: 600; color: #202124; margin-bottom: 2px; }
+.receipt-footer-url { font-size: 11px; color: #5F6368; }
+.receipt-verify-link { font-size: 11px; color: #1A73E8; margin-top: 4px; }
 
 @media(max-width:380px) {
   .pin-box { width: 44px; height: 50px; }
@@ -718,7 +531,6 @@ body {
 </head>
 <body>
 
-<!-- HEADER -->
 <header class="header">
   <div class="header-left">
     <button class="back-btn" onclick="goBack()">&#8592;</button>
@@ -756,15 +568,14 @@ body {
       <span id="siBtnTxt">Sign In</span>
     </button>
     <div class="signin-footer">
-      New to CupX? <a href="https://auth.cupx.in?from=pay">Create Account</a>
+      New to CupX? <a href="https://auth.cupx.in?from=pay">Create Account</a><br>
+      <a href="https://cupx.in/privacy" style="color:var(--gpay-muted);font-size:12px;margin-top:8px;display:inline-block;">Privacy Policy</a>
     </div>
   </div>
 </div>
 
 <!-- DASHBOARD -->
 <div id="dashScreen">
-
-  <!-- Balance Hero -->
   <div class="balance-hero">
     <div class="bh-greeting">Good day,</div>
     <div class="bh-name" id="bhName">—</div>
@@ -779,8 +590,6 @@ body {
   </div>
 
   <div class="main">
-
-    <!-- Quick Actions -->
     <div class="section">
       <div class="quick-actions">
         <div class="qa-item" onclick="openSendModal()">
@@ -795,8 +604,16 @@ body {
           <div class="qa-icon qa-yellow">⏳</div>
           <div class="qa-label">Pending</div>
         </div>
+        <div class="qa-item" onclick="openMyQR()">
+          <div class="qa-icon qa-teal">⬛</div>
+          <div class="qa-label">My QR</div>
+        </div>
+        <div class="qa-item" onclick="openScanQR()">
+          <div class="qa-icon qa-indigo">📷</div>
+          <div class="qa-label">Scan QR</div>
+        </div>
         <div class="qa-item" onclick="window.location.href='https://upi.cupx.in'">
-          <div class="qa-icon qa-indigo">🔑</div>
+          <div class="qa-icon qa-orange">🔑</div>
           <div class="qa-label">Manage UPI</div>
         </div>
       </div>
@@ -804,7 +621,13 @@ body {
 
     <!-- Recent People -->
     <div class="section" id="peopleSection" style="display:none">
-      <div class="section-title">Recent</div>
+      <div class="people-section-header">
+        <div class="section-title" style="margin-bottom:0">Recent</div>
+        <div class="people-tabs">
+          <button class="people-tab active" id="tabPeople" onclick="switchPeopleTab('people',this)">People</button>
+          <button class="people-tab" id="tabBusiness" onclick="switchPeopleTab('business',this)">Business</button>
+        </div>
+      </div>
       <div class="people-row" id="peopleRow"></div>
     </div>
 
@@ -825,11 +648,10 @@ body {
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ══ SEND MONEY MODAL (Step 1: Enter UPI ID) ══ -->
+<!-- ══ SEND MODAL STEP 1 ══ -->
 <div class="modal-overlay" id="sendModal1" onclick="closeMo('sendModal1',event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -848,7 +670,7 @@ body {
   </div>
 </div>
 
-<!-- ══ SEND MONEY MODAL (Step 2: Amount + Note) ══ -->
+<!-- ══ SEND MODAL STEP 2 ══ -->
 <div class="modal-overlay" id="sendModal2" onclick="closeMo('sendModal2',event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -870,7 +692,7 @@ body {
   </div>
 </div>
 
-<!-- ══ SEND MONEY MODAL (Step 3: UPI PIN confirm) ══ -->
+<!-- ══ SEND MODAL STEP 3 (PIN) ══ -->
 <div class="modal-overlay" id="sendModal3" onclick="closeMo('sendModal3',event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -905,12 +727,18 @@ body {
       <div class="success-title">Payment Sent!</div>
       <div class="success-amt" id="successAmt">₹0</div>
       <div class="success-to" id="successTo">to —</div>
-      <button class="btn-gpay" style="max-width:200px;margin:0 auto;" onclick="closeMo('sendSuccess');loadTxn();">Done</button>
+      <div class="success-ref" id="successRef"></div>
+      <div class="receipt-actions">
+        <button class="receipt-btn" onclick="downloadReceiptPNG()">📥 PNG</button>
+        <button class="receipt-btn" onclick="downloadReceiptPDF()">📄 PDF</button>
+        <button class="receipt-btn" onclick="copyReceiptRef()">📋 Copy Ref</button>
+      </div>
+      <button class="btn-gpay" style="max-width:200px;margin:0 auto;" onclick="closeMo('sendSuccess');loadTxn();loadRecentPeople();">Done</button>
     </div>
   </div>
 </div>
 
-<!-- ══ REQUEST MONEY MODAL ══ -->
+<!-- ══ REQUEST MODAL ══ -->
 <div class="modal-overlay" id="requestModal" onclick="closeMo('requestModal',event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -966,7 +794,7 @@ body {
   </div>
 </div>
 
-<!-- ══ CHECK BALANCE MODAL ══ -->
+<!-- ══ CHECK BALANCE ══ -->
 <div class="modal-overlay" id="balModal" onclick="closeMo('balModal',event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
     <div class="modal-handle"></div>
@@ -987,6 +815,54 @@ body {
   </div>
 </div>
 
+<!-- ══ MY QR ══ -->
+<div class="modal-overlay" id="myQRModal" onclick="closeMo('myQRModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">My QR Code</div>
+    <div class="modal-sub">Let others scan to pay you instantly</div>
+    <div class="qr-container">
+      <div class="qr-box" id="myQRBox">
+        <div class="qr-name" id="qrName">—</div>
+        <div class="qr-upi" id="qrUpi">—</div>
+        <div id="qrCanvas"></div>
+        <div class="qr-footer-brand">CPay by CupX Corporation</div>
+      </div>
+      <div class="modal-btn-row" style="width:100%">
+        <button class="receipt-btn" onclick="downloadQRPNG()" style="flex:1;justify-content:center;">📥 Save QR</button>
+        <button class="receipt-btn blue" onclick="shareQR()" style="flex:1;justify-content:center;">↗ Share</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCAN QR ══ -->
+<div class="modal-overlay" id="scanQRModal" onclick="closeMo('scanQRModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Scan QR Code</div>
+    <div class="modal-sub">Point camera at a CPay or UPI QR code</div>
+    <div class="scan-area">
+      <video id="scanVideo" class="scan-video" autoplay playsinline muted></video>
+      <div class="scan-hint" id="scanHint">Starting camera…</div>
+    </div>
+    <div id="scanResult" style="display:none;margin-top:14px;"></div>
+    <div class="modal-btn-row" style="margin-top:16px;">
+      <button class="btn-outline" onclick="stopScan();closeMo('scanQRModal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PERSON HISTORY MODAL ══ -->
+<div class="modal-overlay" id="personHistModal" onclick="closeMo('personHistModal',event)">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div id="phContent">
+      <div class="txn-loading"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ PROFILE SHEET ══ -->
 <div class="modal-overlay" id="profileModal" onclick="closeMo('profileModal',event)">
   <div class="modal-sheet" onclick="event.stopPropagation()">
@@ -996,8 +872,14 @@ body {
       <div>
         <div class="profile-name" id="profileName">—</div>
         <div class="profile-upi" id="profileUpi">—</div>
+        <div id="profileTypeBadge"></div>
         <div class="profile-bal" id="profileBal">Balance hidden</div>
       </div>
+    </div>
+    <div class="profile-menu-item" onclick="closeMo('profileModal');openMyQR()">
+      <span class="pmi-icon">⬛</span>
+      <span class="pmi-label">My QR Code</span>
+      <span class="pmi-arrow">›</span>
     </div>
     <div class="profile-menu-item" onclick="closeMo('profileModal');window.location.href='https://upi.cupx.in'">
       <span class="pmi-icon">🔑</span>
@@ -1014,6 +896,11 @@ body {
       <span class="pmi-label">CupX Home</span>
       <span class="pmi-arrow">›</span>
     </div>
+    <div class="profile-menu-item" onclick="window.open('https://cupx.in/privacy','_blank')">
+      <span class="pmi-icon">🔒</span>
+      <span class="pmi-label">Privacy Policy</span>
+      <span class="pmi-arrow">›</span>
+    </div>
     <div class="profile-menu-item" onclick="logout()" style="border-bottom:none;">
       <span class="pmi-icon">⎋</span>
       <span class="pmi-label" style="color:var(--gpay-red)">Sign Out</span>
@@ -1022,11 +909,64 @@ body {
   </div>
 </div>
 
+<!-- RECEIPT TEMPLATE (hidden, for capture) -->
+<div id="receiptTemplate">
+  <div class="receipt-card" id="receiptCard">
+    <div class="receipt-header">
+      <div class="receipt-logo">
+        <span style="color:#8AB4F8">C</span><span style="color:#F28B82">p</span><span style="color:#FDD663">a</span><span style="color:#81C995">y</span>
+      </div>
+      <div class="receipt-tagline">by CupX Corporation</div>
+      <div class="receipt-status-badge">✓ &nbsp;Payment Successful</div>
+    </div>
+    <div class="receipt-body">
+      <div class="receipt-amount-row">
+        <div class="receipt-amt-label">Amount Paid</div>
+        <div class="receipt-amt-val" id="rcpAmt">₹0</div>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-row-label">From</span>
+        <span class="receipt-row-val" id="rcpFrom">—</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-row-label">To</span>
+        <span class="receipt-row-val" id="rcpTo">—</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-row-label">UPI ID</span>
+        <span class="receipt-row-val" id="rcpUpi">—</span>
+      </div>
+      <div class="receipt-row">
+        <span class="receipt-row-label">Date & Time</span>
+        <span class="receipt-row-val" id="rcpDate">—</span>
+      </div>
+      <div class="receipt-row" id="rcpNoteRow" style="display:none">
+        <span class="receipt-row-label">Note</span>
+        <span class="receipt-row-val" id="rcpNote">—</span>
+      </div>
+      <div class="receipt-divider"></div>
+      <div class="receipt-ref">
+        <div class="receipt-ref-lbl">Transaction Reference</div>
+        <div class="receipt-ref-val" id="rcpRef">—</div>
+      </div>
+      <div class="receipt-qr-row">
+        <div class="receipt-qr-box">
+          <div id="rcpQR"></div>
+        </div>
+      </div>
+      <div style="text-align:center;font-size:11px;color:#5F6368;" id="rcpVerifyLink">—</div>
+    </div>
+    <div class="receipt-footer">
+      <div class="receipt-footer-brand">CPay by CupX Corporation</div>
+      <div class="receipt-footer-url">cupx.in · pay.cupx.in</div>
+      <div class="receipt-verify-link" id="rcpFooterRef">—</div>
+    </div>
+  </div>
+</div>
+
 <script>
-// ── CONFIG ──
 const SUPABASE_URL = 'https://astnfrwbebzxcxlltpkn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdG5mcndiZWJ6eGN4bGx0cGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjg2OTIsImV4cCI6MjA5MDgwNDY5Mn0.gqp08ROPoDZWyE0KVtV-VCFdTmEXl4HOEL8v7Xjd0I4';
-
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let currentUser = null;
@@ -1034,23 +974,37 @@ let txnAll = [];
 let activeFilter = 'all';
 let recipientUser = null;
 let pendingRequestId = null;
+let lastTxnData = null; // for receipt
+let recentPeopleAll = [];
+let activePeopleTab = 'people';
+let scanStream = null;
+let qrInstance = null;
+let rcpQRInstance = null;
+let usersCache = {};
 
-// avatar colors
 const COLORS = ['#1A73E8','#34A853','#EA4335','#FBBC04','#8E24AA','#00897B','#E91E63','#F4511E'];
-function colorFor(str) { let h=0; for(let c of (str||'?')) h=(h*31+c.charCodeAt(0))&0xFFFFFF; return COLORS[Math.abs(h)%COLORS.length]; }
-function initial(str) { return (str||'?').charAt(0).toUpperCase(); }
+function colorFor(str){ let h=0; for(let c of (str||'?')) h=(h*31+c.charCodeAt(0))&0xFFFFFF; return COLORS[Math.abs(h)%COLORS.length]; }
+function initial(str){ return (str||'?').charAt(0).toUpperCase(); }
+
+function genRefId(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let r='CPY-';
+  for(let i=0;i<8;i++) r+=chars[Math.floor(Math.random()*chars.length)];
+  return r;
+}
 
 // ── BOOT ──
 (function init(){
-  const saved = localStorage.getItem('cupx_user');
-  if(saved){ try{ currentUser=JSON.parse(saved); showDash(); }catch(e){ showSignin(); } }
+  const saved=localStorage.getItem('cupx_user');
+  if(saved){try{currentUser=JSON.parse(saved);showDash();}catch(e){showSignin();}}
   else showSignin();
 })();
 
 function showSignin(){
+  // Close all modals before showing signin
+  document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));
   document.getElementById('signinScreen').style.display='flex';
   document.getElementById('dashScreen').style.display='none';
-  document.getElementById('bottom-nav') && (document.getElementById('bottom-nav').style.display='none');
 }
 
 function goBack(){
@@ -1079,7 +1033,7 @@ async function doSignin(){
   btn.innerHTML='<div class="spinner" style="width:20px;height:20px;border-width:2px;border-color:#fff3;border-top-color:#fff"></div>';
   const{data,error}=await db.from('users').select('*').eq('username',u).eq('password',p).single();
   btn.disabled=false;
-  btn.innerHTML='<span id="siBtnTxt">Sign In</span>';
+  btn.innerHTML='<span>Sign In</span>';
   if(error||!data){errEl.textContent='Invalid username or password';return;}
   localStorage.setItem('cupx_user',JSON.stringify(data));
   currentUser=data;
@@ -1095,7 +1049,6 @@ async function showDash(){
   document.getElementById('bhName').textContent=name;
   document.getElementById('bhUpi').textContent=currentUser.upi_id||'';
   document.getElementById('balDisplay').textContent='₹ ••••••';
-  // avatar
   const av=document.getElementById('headerAvatar');
   av.textContent=initial(name);
   av.style.background=`linear-gradient(135deg,${colorFor(currentUser.username)},${colorFor(currentUser.username+'x')})`;
@@ -1107,14 +1060,23 @@ async function showDash(){
 async function loadTxn(){
   document.getElementById('txnList').innerHTML='<div class="txn-loading"><div class="spinner"></div></div>';
   const{data,error}=await db
-    .from('transactions')
-    .select('*')
+    .from('transactions').select('*')
     .or(`from_user.eq.${currentUser.username},to_user.eq.${currentUser.username}`)
-    .order('created_at',{ascending:false})
-    .limit(50);
+    .order('created_at',{ascending:false}).limit(50);
   if(error||!data){document.getElementById('txnList').innerHTML='<div class="txn-empty">Could not load transactions</div>';return;}
   txnAll=data;
+  // Pre-fetch user account types for badge display
+  const users=new Set();
+  data.forEach(t=>{users.add(t.from_user);users.add(t.to_user);});
+  await preloadUsers([...users]);
   renderTxn();
+}
+
+async function preloadUsers(usernames){
+  const toLoad=usernames.filter(u=>u&&!usersCache[u]);
+  if(!toLoad.length) return;
+  const{data}=await db.from('users').select('username,full_name,account_type,upi_id').in('username',toLoad);
+  if(data) data.forEach(u=>{usersCache[u.username]=u;});
 }
 
 function filterTxn(f,btn){
@@ -1135,6 +1097,8 @@ function renderTxn(){
     const isCredit=t.to_user===u;
     const isPending=t.status==='pending';
     const other=isCredit?(t.from_user||'?'):(t.to_user||'?');
+    const otherData=usersCache[other]||{};
+    const isBiz=otherData.account_type==='business';
     const amt=parseFloat(t.amount||0).toLocaleString('en-IN',{minimumFractionDigits:2});
     const dt=t.created_at?new Date(t.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
     let amtCls,amtSign;
@@ -1142,11 +1106,13 @@ function renderTxn(){
     else if(isCredit){amtCls='ta-green';amtSign='+';}
     else{amtCls='ta-red';amtSign='-';}
     const statusCls=t.status==='success'?'ts-success':t.status==='pending'?'ts-pending':'ts-failed';
-    return `<div class="txn-item">
-      <div class="txn-avatar" style="background:${colorFor(other)}">${initial(other)}</div>
+    const bizBadge=isBiz?'<div class="biz-badge-sm">🏪</div>':'';
+    const displayName=otherData.full_name||other;
+    return `<div class="txn-item" onclick="openPersonHist('${other}')">
+      <div class="txn-avatar" style="background:${colorFor(other)}">${initial(displayName)}${bizBadge}</div>
       <div class="txn-info">
-        <div class="txn-title">${isPending?'Request from '+other:(isCredit?'From '+other:'To '+other)}</div>
-        <div class="txn-sub">${dt}${t.type?' · '+t.type:''}</div>
+        <div class="txn-title">${isPending?'Request from '+displayName:(isCredit?'From '+displayName:'To '+displayName)}</div>
+        <div class="txn-sub">${dt}${t.reference_id?' · '+t.reference_id:''}</div>
       </div>
       <div class="txn-right">
         <div class="txn-amount ${amtCls}">${amtSign}₹${amt}</div>
@@ -1160,32 +1126,132 @@ function renderTxn(){
 // ── RECENT PEOPLE ──
 async function loadRecentPeople(){
   const{data}=await db
-    .from('transactions')
-    .select('from_user,to_user')
+    .from('transactions').select('from_user,to_user')
     .or(`from_user.eq.${currentUser.username},to_user.eq.${currentUser.username}`)
-    .order('created_at',{ascending:false})
-    .limit(20);
-  if(!data||!data.length)return;
+    .order('created_at',{ascending:false}).limit(30);
+  if(!data||!data.length) return;
   const seen=new Set();
   const people=[];
   for(const t of data){
     const other=t.from_user===currentUser.username?t.to_user:t.from_user;
     if(other&&!seen.has(other)){seen.add(other);people.push(other);}
-    if(people.length>=5)break;
+    if(people.length>=8) break;
   }
-  if(!people.length)return;
+  if(!people.length) return;
+  await preloadUsers(people);
+  recentPeopleAll=people;
+  renderPeopleRow();
   document.getElementById('peopleSection').style.display='block';
-  document.getElementById('peopleRow').innerHTML=people.map(p=>`
-    <div class="person-item" onclick="quickSendTo('${p}')">
-      <div class="person-avatar" style="background:${colorFor(p)}">${initial(p)}</div>
-      <div class="person-name">${p}</div>
-    </div>`).join('');
+}
+
+function switchPeopleTab(tab,btn){
+  activePeopleTab=tab;
+  document.querySelectorAll('.people-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderPeopleRow();
+}
+
+function renderPeopleRow(){
+  const people=recentPeopleAll.filter(p=>{
+    const u=usersCache[p];
+    if(!u) return activePeopleTab==='people';
+    if(activePeopleTab==='business') return u.account_type==='business';
+    return u.account_type!=='business';
+  });
+  if(!people.length){
+    document.getElementById('peopleRow').innerHTML=`<div style="font-size:13px;color:var(--gpay-muted);padding:10px 0;">No ${activePeopleTab==='business'?'businesses':'people'} yet</div>`;
+    return;
+  }
+  document.getElementById('peopleRow').innerHTML=people.map(p=>{
+    const u=usersCache[p]||{};
+    const isBiz=u.account_type==='business';
+    const displayName=u.full_name||p;
+    const bizBadge=isBiz?'<div class="biz-badge">🏪</div>':'';
+    return `<div class="person-item" onclick="openPersonHist('${p}')">
+      <div class="person-avatar" style="background:${colorFor(p)}">${initial(displayName)}${bizBadge}</div>
+      <div class="person-name">${displayName}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── PERSON HISTORY ──
+async function openPersonHist(username){
+  document.getElementById('personHistModal').classList.add('open');
+  document.getElementById('phContent').innerHTML='<div class="txn-loading"><div class="spinner"></div></div>';
+  const[txnRes,userRes]=await Promise.all([
+    db.from('transactions').select('*')
+      .or(`and(from_user.eq.${currentUser.username},to_user.eq.${username}),and(from_user.eq.${username},to_user.eq.${currentUser.username})`)
+      .order('created_at',{ascending:false}).limit(30),
+    db.from('users').select('username,full_name,upi_id,account_type,business_name').eq('username',username).single()
+  ]);
+  const txns=txnRes.data||[];
+  const user=userRes.data||{username};
+  const isBiz=user.account_type==='business';
+  const displayName=(isBiz&&user.business_name)||user.full_name||username;
+  // Stats
+  let totalSent=0,totalReceived=0;
+  txns.forEach(t=>{
+    if(t.from_user===currentUser.username&&t.status==='success') totalSent+=parseFloat(t.amount||0);
+    if(t.to_user===currentUser.username&&t.status==='success') totalReceived+=parseFloat(t.amount||0);
+  });
+  const typeClass=isBiz?'ptb-business':'ptb-personal';
+  const typeLabel=isBiz?'🏪 Business':'👤 Personal';
+  const bizBadge=isBiz?'<div class="biz-badge" style="position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:var(--gpay-yellow);border:2px solid white;font-size:9px;display:flex;align-items:center;justify-content:center;">🏪</div>':'';
+  const txnHtml=txns.length?txns.map(t=>{
+    const isCredit=t.to_user===currentUser.username;
+    const amt=parseFloat(t.amount||0).toLocaleString('en-IN',{minimumFractionDigits:2});
+    const dt=t.created_at?new Date(t.created_at).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):'—';
+    let amtCls=isCredit?'ta-green':'ta-red';
+    let amtSign=isCredit?'+':'-';
+    if(t.status==='pending'){amtCls='ta-muted';amtSign='';}
+    const statusCls=t.status==='success'?'ts-success':t.status==='pending'?'ts-pending':'ts-failed';
+    return `<div class="txn-item" style="padding:10px 0">
+      <div style="flex:1">
+        <div class="txn-title">${isCredit?'Received':'Sent'}</div>
+        <div class="txn-sub">${dt}${t.txn_note?' · '+t.txn_note:(t.type?' · '+t.type:'')}</div>
+        ${t.reference_id?`<div style="font-size:10px;color:var(--gpay-muted);font-family:monospace;">${t.reference_id}</div>`:''}
+      </div>
+      <div class="txn-right">
+        <div class="txn-amount ${amtCls}">${amtSign}₹${amt}</div>
+        <div class="txn-status ${statusCls}">${t.status||'—'}</div>
+      </div>
+    </div>`;
+  }).join(''):'<div class="txn-empty">No transactions yet</div>';
+
+  document.getElementById('phContent').innerHTML=`
+    <div class="ph-header">
+      <div class="ph-avatar" style="background:${colorFor(username)}">${initial(displayName)}${bizBadge}</div>
+      <div>
+        <div class="ph-name">${displayName}</div>
+        <div class="ph-upi">${user.upi_id||username}</div>
+        <span class="ph-type-badge ${typeClass}">${typeLabel}</span>
+      </div>
+    </div>
+    <div class="ph-stats">
+      <div class="ph-stat">
+        <div class="ph-stat-val ta-red">₹${totalSent.toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+        <div class="ph-stat-lbl">You Sent</div>
+      </div>
+      <div class="ph-stat">
+        <div class="ph-stat-val ta-green">₹${totalReceived.toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+        <div class="ph-stat-lbl">You Received</div>
+      </div>
+      <div class="ph-stat">
+        <div class="ph-stat-val" style="color:var(--gpay-text)">${txns.length}</div>
+        <div class="ph-stat-lbl">Transactions</div>
+      </div>
+    </div>
+    <div style="font-size:13px;font-weight:600;color:var(--gpay-muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">History</div>
+    <div class="ph-txn-list">${txnHtml}</div>
+    <button class="ph-send-btn" onclick="closeMo('personHistModal');quickSendTo('${username}')">💸 Send Money to ${displayName}</button>
+  `;
 }
 
 // ── MODALS ──
 function closeMo(id,e){
   if(!e||e.target===document.getElementById(id)){
     document.getElementById(id).classList.remove('open');
+    if(id==='scanQRModal') stopScan();
     clearAllPins();
   }
 }
@@ -1204,18 +1270,17 @@ function getPin(px){return[0,1,2,3].map(i=>{const el=document.getElementById(px+
 ['sp','ap','bp'].forEach(px=>{
   for(let i=0;i<4;i++){
     const el=document.getElementById(px+i);
-    if(!el)continue;
+    if(!el) continue;
     el.addEventListener('input',()=>{
       el.value=el.value.replace(/[^0-9]/g,'').slice(-1);
-      if(el.value&&i<3)document.getElementById(px+(i+1)).focus();
+      if(el.value&&i<3) document.getElementById(px+(i+1)).focus();
     });
     el.addEventListener('keydown',e=>{
-      if(e.key==='Backspace'&&!el.value&&i>0)document.getElementById(px+(i-1)).focus();
+      if(e.key==='Backspace'&&!el.value&&i>0) document.getElementById(px+(i-1)).focus();
     });
   }
 });
 
-// Amount divider focus effect
 document.getElementById('sendAmount').addEventListener('focus',()=>document.getElementById('amtDivider').classList.add('focused'));
 document.getElementById('sendAmount').addEventListener('blur',()=>document.getElementById('amtDivider').classList.remove('focused'));
 
@@ -1242,21 +1307,22 @@ async function lookupRecipient(){
   const errEl=document.getElementById('send1Err');
   errEl.textContent='';
   if(!val){errEl.textContent='Enter a username or UPI ID';return;}
-  // resolve: could be username or upi_id
-  let query=db.from('users').select('id,username,full_name,upi_id');
+  let query=db.from('users').select('id,username,full_name,upi_id,account_type,business_name');
   if(val.includes('@')) query=query.eq('upi_id',val);
   else query=query.eq('username',val);
   const{data,error}=await query.single();
   if(error||!data){errEl.textContent='User not found';document.getElementById('sendNext1Btn').disabled=true;return;}
   if(data.username===currentUser.username){errEl.textContent='Cannot send money to yourself';document.getElementById('sendNext1Btn').disabled=true;return;}
   recipientUser=data;
-  const name=data.full_name||data.username;
+  const isBiz=data.account_type==='business';
+  const name=(isBiz&&data.business_name)||data.full_name||data.username;
+  const badge=isBiz?'<span style="font-size:11px;background:#FEF7E0;color:#B06000;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px;">🏪 Business</span>':'';
   document.getElementById('recipientResult').style.display='block';
   document.getElementById('recipientResult').innerHTML=`
     <div class="recipient-chip">
       <div class="rc-avatar" style="background:${colorFor(data.username)}">${initial(name)}</div>
       <div class="rc-info">
-        <div class="rc-name">${name}</div>
+        <div class="rc-name">${name}${badge}</div>
         <div class="rc-upi">${data.upi_id}</div>
       </div>
     </div>`;
@@ -1266,13 +1332,15 @@ async function lookupRecipient(){
 document.getElementById('sendRecipient').addEventListener('keydown',e=>{if(e.key==='Enter')lookupRecipient();});
 
 function goSendStep2(){
-  if(!recipientUser)return;
-  const name=recipientUser.full_name||recipientUser.username;
+  if(!recipientUser) return;
+  const isBiz=recipientUser.account_type==='business';
+  const name=(isBiz&&recipientUser.business_name)||recipientUser.full_name||recipientUser.username;
+  const badge=isBiz?'<span style="font-size:11px;background:#FEF7E0;color:#B06000;padding:2px 8px;border-radius:10px;font-weight:600;margin-left:6px;">🏪</span>':'';
   document.getElementById('recipientChip2').innerHTML=`
     <div class="recipient-chip">
       <div class="rc-avatar" style="background:${colorFor(recipientUser.username)}">${initial(name)}</div>
       <div class="rc-info">
-        <div class="rc-name">${name}</div>
+        <div class="rc-name">${name}${badge}</div>
         <div class="rc-upi">${recipientUser.upi_id}</div>
       </div>
     </div>`;
@@ -1289,10 +1357,9 @@ function goSendStep3(){
   const errEl=document.getElementById('send2Err');
   errEl.textContent='';
   if(!amt||amt<=0){errEl.textContent='Enter a valid amount';return;}
-  if(!currentUser.upi_pin){
-    errEl.textContent='Please set your UPI PIN first on upi.cupx.in';return;
-  }
-  const name=recipientUser.full_name||recipientUser.username;
+  if(!currentUser.upi_pin){errEl.textContent='Please set your UPI PIN first on upi.cupx.in';return;}
+  const isBiz=recipientUser.account_type==='business';
+  const name=(isBiz&&recipientUser.business_name)||recipientUser.full_name||recipientUser.username;
   document.getElementById('sendSummaryTo').textContent=name+' ('+recipientUser.upi_id+')';
   document.getElementById('sendSummaryAmt').textContent='₹'+amt.toLocaleString('en-IN',{minimumFractionDigits:2});
   for(let i=0;i<4;i++){const el=document.getElementById('sp'+i);if(el)el.value='';}
@@ -1312,6 +1379,9 @@ async function executeSend(){
   const amt=parseFloat(document.getElementById('sendAmount').value);
   if(parseFloat(currentUser.balance)<amt){errEl.textContent='Insufficient balance';return;}
   btn.disabled=true;btn.textContent='Processing…';
+  const note=document.getElementById('sendNote').value.trim();
+  const refId=genRefId();
+  const now=new Date().toISOString();
   // Deduct from sender
   const newBal=parseFloat(currentUser.balance)-amt;
   const{error:e1}=await db.from('users').update({balance:newBal}).eq('id',currentUser.id);
@@ -1323,33 +1393,117 @@ async function executeSend(){
     await db.from('users').update({balance:recipBal}).eq('id',recipientUser.id);
   }
   // Record transaction
-  const note=document.getElementById('sendNote').value.trim();
   await db.from('transactions').insert([{
     from_user:currentUser.username,
     to_user:recipientUser.username,
     amount:amt,
     status:'success',
-    type:note||'transfer',
-    created_at:new Date().toISOString()
+    type:'transfer',
+    txn_note:note||null,
+    reference_id:refId,
+    created_at:now
   }]);
-  // Send notification to recipient
+  // Notify recipient
   await db.from('notifications').insert([{
     user:recipientUser.username,
     title:'Money Received',
     message:`You received ₹${amt} from ${currentUser.username}`,
     type:'credit',
     is_read:false,
-    created_at:new Date().toISOString()
+    created_at:now
   }]);
   currentUser.balance=newBal;
   localStorage.setItem('cupx_user',JSON.stringify(currentUser));
+  // Store for receipt
+  const isBiz=recipientUser.account_type==='business';
+  const recipName=(isBiz&&recipientUser.business_name)||recipientUser.full_name||recipientUser.username;
+  lastTxnData={
+    refId,amt,note,now,
+    fromName:currentUser.full_name||currentUser.username,
+    fromUpi:currentUser.upi_id,
+    toName:recipName,
+    toUpi:recipientUser.upi_id,
+    toUsername:recipientUser.username
+  };
   btn.disabled=false;btn.textContent='Pay Now';
   document.getElementById('sendModal3').classList.remove('open');
-  const name=recipientUser.full_name||recipientUser.username;
   document.getElementById('successAmt').textContent='₹'+amt.toLocaleString('en-IN',{minimumFractionDigits:2});
-  document.getElementById('successTo').textContent='to '+name;
+  document.getElementById('successTo').textContent='to '+recipName;
+  document.getElementById('successRef').textContent='Ref: '+refId;
   document.getElementById('sendSuccess').classList.add('open');
   clearAllPins();
+  buildReceiptTemplate();
+}
+
+// ── RECEIPT ──
+function buildReceiptTemplate(){
+  if(!lastTxnData) return;
+  const d=lastTxnData;
+  document.getElementById('rcpAmt').textContent='₹'+parseFloat(d.amt).toLocaleString('en-IN',{minimumFractionDigits:2});
+  document.getElementById('rcpFrom').textContent=d.fromName+(d.fromUpi?' ('+d.fromUpi+')':'');
+  document.getElementById('rcpTo').textContent=d.toName+(d.toUpi?' ('+d.toUpi+')':'');
+  document.getElementById('rcpUpi').textContent=d.toUpi||'—';
+  document.getElementById('rcpDate').textContent=new Date(d.now).toLocaleString('en-IN',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  if(d.note){
+    document.getElementById('rcpNoteRow').style.display='flex';
+    document.getElementById('rcpNote').textContent=d.note;
+  } else {
+    document.getElementById('rcpNoteRow').style.display='none';
+  }
+  document.getElementById('rcpRef').textContent=d.refId;
+  const verifyUrl=`pay.cupx.in/txn/${d.refId}`;
+  document.getElementById('rcpVerifyLink').textContent='Verify: '+verifyUrl;
+  document.getElementById('rcpFooterRef').textContent=d.refId;
+  // QR
+  const qrEl=document.getElementById('rcpQR');
+  qrEl.innerHTML='';
+  try{
+    rcpQRInstance=new QRCode(qrEl,{text:'https://pay.cupx.in/txn/'+d.refId,width:80,height:80,colorDark:'#202124',colorLight:'#F8F9FA',correctLevel:QRCode.CorrectLevel.M});
+  }catch(e){}
+}
+
+async function downloadReceiptPNG(){
+  if(!lastTxnData){alert('No receipt data');return;}
+  buildReceiptTemplate();
+  await new Promise(r=>setTimeout(r,300));
+  const el=document.getElementById('receiptCard');
+  el.style.display='block';
+  try{
+    const canvas=await html2canvas(el,{scale:2.5,backgroundColor:'#ffffff',useCORS:true,logging:false});
+    const link=document.createElement('a');
+    link.download=`CPay-Receipt-${lastTxnData.refId}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  }catch(e){alert('Could not generate PNG: '+e.message);}
+}
+
+async function downloadReceiptPDF(){
+  if(!lastTxnData){alert('No receipt data');return;}
+  buildReceiptTemplate();
+  await new Promise(r=>setTimeout(r,300));
+  const el=document.getElementById('receiptCard');
+  el.style.display='block';
+  try{
+    const canvas=await html2canvas(el,{scale:2.5,backgroundColor:'#ffffff',useCORS:true,logging:false});
+    const imgData=canvas.toDataURL('image/png');
+    const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a6'});
+    const pageW=pdf.internal.pageSize.getWidth();
+    const pageH=pdf.internal.pageSize.getHeight();
+    const ratio=canvas.width/canvas.height;
+    let w=pageW,h=pageW/ratio;
+    if(h>pageH){h=pageH;w=pageH*ratio;}
+    pdf.addImage(imgData,'PNG',(pageW-w)/2,(pageH-h)/2,w,h);
+    pdf.save(`CPay-Receipt-${lastTxnData.refId}.pdf`);
+  }catch(e){alert('Could not generate PDF: '+e.message);}
+}
+
+function copyReceiptRef(){
+  if(!lastTxnData){alert('No receipt data');return;}
+  navigator.clipboard.writeText(lastTxnData.refId).then(()=>{
+    const btn=document.querySelector('.receipt-btn:last-child');
+    if(btn){const orig=btn.textContent;btn.textContent='✓ Copied!';setTimeout(()=>{btn.textContent=orig;},1500);}
+  }).catch(()=>alert('Reference: '+lastTxnData.refId));
 }
 
 // ── REQUEST MONEY ──
@@ -1372,14 +1526,13 @@ async function sendRequest(){
   if(!from){errEl.textContent='Enter a username or UPI ID';return;}
   if(!amt||amt<=0){errEl.textContent='Enter a valid amount';return;}
   if(from===currentUser.username||from===currentUser.upi_id){errEl.textContent='Cannot request from yourself';return;}
-  // Lookup user
   let q=db.from('users').select('username,upi_id');
   if(from.includes('@')) q=q.eq('upi_id',from);
   else q=q.eq('username',from);
   const{data:target}=await q.single();
   if(!target){errEl.textContent='User not found';return;}
   btn.disabled=true;btn.textContent='Sending…';
-  // Insert payment_request
+  // from_user = payer (target), to_user = requester (currentUser)
   await db.from('payment_requests').insert([{
     from_user:target.username,
     to_user:currentUser.username,
@@ -1388,7 +1541,6 @@ async function sendRequest(){
     note:note||null,
     created_at:new Date().toISOString()
   }]);
-  // Notify
   await db.from('notifications').insert([{
     user:target.username,
     title:'Payment Request',
@@ -1407,9 +1559,9 @@ async function sendRequest(){
 async function openPendingModal(){
   document.getElementById('pendingModal').classList.add('open');
   document.getElementById('pendingList').innerHTML='<div class="txn-loading"><div class="spinner"></div></div>';
+  // from_user = current user (they are the one being asked to pay)
   const{data,error}=await db
-    .from('payment_requests')
-    .select('*')
+    .from('payment_requests').select('*')
     .eq('from_user',currentUser.username)
     .eq('status','pending')
     .order('created_at',{ascending:false});
@@ -1454,27 +1606,26 @@ async function executeAccept(){
   if(pin.length<4){errEl.textContent='Enter your 4-digit UPI PIN';return;}
   if(pin!==currentUser.upi_pin){errEl.textContent='Incorrect UPI PIN';return;}
   btn.disabled=true;btn.textContent='Processing…';
-  // Fetch request
   const{data:req}=await db.from('payment_requests').select('*').eq('id',pendingRequestId).single();
   if(!req){errEl.textContent='Request not found';btn.disabled=false;btn.textContent='Pay';return;}
   const amt=parseFloat(req.amount);
   if(parseFloat(currentUser.balance)<amt){errEl.textContent='Insufficient balance';btn.disabled=false;btn.textContent='Pay';return;}
-  // Deduct
+  const refId=genRefId();
+  const now=new Date().toISOString();
   const newBal=parseFloat(currentUser.balance)-amt;
   await db.from('users').update({balance:newBal}).eq('id',currentUser.id);
-  // Credit to requester
   const{data:reqUser}=await db.from('users').select('id,balance').eq('username',req.to_user).single();
-  if(reqUser){await db.from('users').update({balance:parseFloat(reqUser.balance||0)+amt}).eq('id',reqUser.id);}
-  // Record txn
+  if(reqUser) await db.from('users').update({balance:parseFloat(reqUser.balance||0)+amt}).eq('id',reqUser.id);
   await db.from('transactions').insert([{
     from_user:currentUser.username,
     to_user:req.to_user,
     amount:amt,
     status:'success',
     type:'request_payment',
-    created_at:new Date().toISOString()
+    txn_note:req.note||null,
+    reference_id:refId,
+    created_at:now
   }]);
-  // Update request status
   await db.from('payment_requests').update({status:'completed'}).eq('id',pendingRequestId);
   currentUser.balance=newBal;
   localStorage.setItem('cupx_user',JSON.stringify(currentUser));
@@ -1483,8 +1634,7 @@ async function executeAccept(){
   document.getElementById('pendingModal').classList.remove('open');
   clearAllPins();
   loadTxn();
-  // Show mini success
-  alert('✓ Payment of ₹'+amt.toLocaleString('en-IN',{minimumFractionDigits:2})+' sent to '+req.to_user);
+  alert(`✓ Payment of ₹${amt.toLocaleString('en-IN',{minimumFractionDigits:2})} sent to ${req.to_user}\nRef: ${refId}`);
 }
 
 async function declineRequest(reqId,btn){
@@ -1525,11 +1675,127 @@ async function checkBalance(){
   document.getElementById('balDisplay').textContent='₹ '+amt;
 }
 
+// ── MY QR ──
+function openMyQR(){
+  const name=currentUser.full_name||currentUser.username;
+  document.getElementById('qrName').textContent=name;
+  document.getElementById('qrUpi').textContent=currentUser.upi_id||currentUser.username+'@cupx';
+  const qrEl=document.getElementById('qrCanvas');
+  qrEl.innerHTML='';
+  try{
+    qrInstance=new QRCode(qrEl,{
+      text:`upi://pay?pa=${currentUser.upi_id||currentUser.username+'@cupx'}&pn=${encodeURIComponent(name)}&cu=INR`,
+      width:180,height:180,
+      colorDark:'#202124',colorLight:'#ffffff',
+      correctLevel:QRCode.CorrectLevel.M
+    });
+  }catch(e){qrEl.textContent='QR unavailable';}
+  document.getElementById('myQRModal').classList.add('open');
+}
+
+async function downloadQRPNG(){
+  const el=document.getElementById('myQRBox');
+  try{
+    const canvas=await html2canvas(el,{scale:3,backgroundColor:'#ffffff',logging:false});
+    const link=document.createElement('a');
+    link.download=`CPay-QR-${currentUser.username}.png`;
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  }catch(e){alert('Could not save QR');}
+}
+
+async function shareQR(){
+  try{
+    const el=document.getElementById('myQRBox');
+    const canvas=await html2canvas(el,{scale:3,backgroundColor:'#ffffff',logging:false});
+    canvas.toBlob(async blob=>{
+      if(navigator.share&&blob){
+        const file=new File([blob],'CPay-QR.png',{type:'image/png'});
+        await navigator.share({title:'My CPay QR',text:`Pay ${currentUser.full_name||currentUser.username} on CPay`,files:[file]});
+      } else {
+        downloadQRPNG();
+      }
+    });
+  }catch(e){downloadQRPNG();}
+}
+
+// ── SCAN QR ──
+async function openScanQR(){
+  document.getElementById('scanQRModal').classList.add('open');
+  document.getElementById('scanResult').style.display='none';
+  document.getElementById('scanHint').textContent='Starting camera…';
+  try{
+    scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const video=document.getElementById('scanVideo');
+    video.srcObject=scanStream;
+    document.getElementById('scanHint').textContent='Align QR code within view';
+    startQRDecode(video);
+  }catch(e){
+    document.getElementById('scanHint').textContent='Camera access denied. Please allow camera permission.';
+  }
+}
+
+function stopScan(){
+  if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null;}
+}
+
+function startQRDecode(video){
+  // Simple interval-based scan using canvas + BarcodeDetector if available
+  if('BarcodeDetector' in window){
+    const detector=new BarcodeDetector({formats:['qr_code']});
+    const interval=setInterval(async()=>{
+      if(!scanStream){clearInterval(interval);return;}
+      try{
+        const barcodes=await detector.detect(video);
+        if(barcodes.length>0){
+          clearInterval(interval);
+          stopScan();
+          handleQRResult(barcodes[0].rawValue);
+        }
+      }catch(e){}
+    },500);
+  } else {
+    document.getElementById('scanHint').textContent='QR scanning not supported on this browser. Try Chrome on Android.';
+  }
+}
+
+function handleQRResult(raw){
+  let upiId='';
+  let payeeName='';
+  if(raw.startsWith('upi://')){
+    try{
+      const url=new URL(raw);
+      upiId=url.searchParams.get('pa')||'';
+      payeeName=url.searchParams.get('pn')||'';
+    }catch(e){upiId=raw;}
+  } else if(raw.includes('@')){
+    upiId=raw;
+  } else if(raw.includes('pay.cupx.in/txn/')){
+    const ref=raw.split('/txn/')[1];
+    document.getElementById('scanResult').style.display='block';
+    document.getElementById('scanResult').innerHTML=`<div style="background:var(--gpay-bg);border-radius:12px;padding:14px;text-align:center;"><div style="font-size:14px;font-weight:600;">Transaction Receipt</div><div style="font-size:13px;color:var(--gpay-muted);margin-top:4px;">${ref}</div></div>`;
+    return;
+  }
+  if(upiId){
+    document.getElementById('scanResult').style.display='block';
+    document.getElementById('scanResult').innerHTML=`<div style="background:#E6F4EA;border-radius:12px;padding:14px;text-align:center;"><div style="font-size:14px;font-weight:600;color:var(--gpay-green);">✓ QR Scanned</div><div style="font-size:13px;margin-top:4px;">${payeeName?payeeName+' · ':''}<span style="color:var(--gpay-muted)">${upiId}</span></div></div>`;
+    setTimeout(()=>{
+      document.getElementById('scanQRModal').classList.remove('open');
+      openSendModal();
+      document.getElementById('sendRecipient').value=upiId;
+      setTimeout(()=>lookupRecipient(),200);
+    },1000);
+  }
+}
+
 // ── PROFILE ──
 function openProfile(){
   const name=currentUser.full_name||currentUser.username;
   document.getElementById('profileName').textContent=name;
   document.getElementById('profileUpi').textContent=currentUser.upi_id||'—';
+  const isBiz=currentUser.account_type==='business';
+  const badgeEl=document.getElementById('profileTypeBadge');
+  badgeEl.innerHTML=`<span class="profile-type-badge ${isBiz?'ptb-business':'ptb-personal'}">${isBiz?'🏪 Business':'👤 Personal'}</span>`;
   document.getElementById('profileBal').textContent='Balance hidden · tap Check Balance';
   const av=document.getElementById('profileAvatarLg');
   av.textContent=initial(name);
@@ -1540,8 +1806,11 @@ function openProfile(){
 // ── LOGOUT ──
 function logout(){
   if(confirm('Sign out of CPay?')){
+    stopScan();
+    // Close all modals first
+    document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));
     localStorage.removeItem('cupx_user');
-    currentUser=null;txnAll=[];
+    currentUser=null;txnAll=[];recentPeopleAll=[];usersCache={};lastTxnData=null;
     showSignin();
   }
 }
