@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>404 – Page Not Found | CPay</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700&display=swap');
+
+:root {
+  --gpay-blue: #1A73E8;
+  --gpay-blue-dark: #1557B0;
+  --gpay-bg: #F8F9FA;
+  --gpay-text: #202124;
+  --gpay-muted: #5F6368;
+  --gpay-border: #E8EAED;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background-color: var(--gpay-bg);
+  color: var(--gpay-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 20px;
+}
+
+.error-container {
+  max-width: 450px;
+  width: 100%;
+  background: white;
+  padding: 40px 24px;
+  border-radius: 28px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+.cpay-logo {
+  font-family: 'Sora', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  letter-spacing: -1px;
+}
+
+.c-blue { color: #1A73E8; }
+.c-red { color: #EA4335; }
+.c-yellow { color: #FBBC04; }
+.c-green { color: #34A853; }
+
+.error-code {
+  font-size: 80px;
+  font-weight: 700;
+  color: var(--gpay-blue);
+  line-height: 1;
+  margin-bottom: 10px;
+  font-family: 'Sora', sans-serif;
+}
+
+h1 { font-size: 22px; margin-bottom: 12px; }
+p { color: var(--gpay-muted); margin-bottom: 30px; font-size: 15px; line-height: 1.5; }
+
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 15px;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.btn-primary {
+  background: var(--gpay-blue);
+  color: white;
+}
+.btn-primary:hover { background: var(--gpay-blue-dark); }
+
+.btn-outline {
+  background: white;
+  color: var(--gpay-blue);
+  border: 1.5px solid var(--gpay-border);
+}
+.btn-outline:hover { background: var(--gpay-bg); border-color: var(--gpay-blue); }
+
+.footer {
+  margin-top: 40px;
+  font-size: 13px;
+  color: var(--gpay-muted);
+}
+
+.illustration {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+</style>
+</head>
+<body>
+
+<div class="error-container">
+  <div class="cpay-logo">
+    <span class="c-blue">C</span><span class="c-red">p</span><span class="c-yellow">a</span><span class="c-green">y</span>
+  </div>
+
+  <div class="illustration">💸📉</div>
+  <div class="error-code">404</div>
+  <h1>Transaction Void</h1>
+  <p>The page you're looking for has timed out or doesn't exist. Let's get you back on track.</p>
+
+  <div class="btn-group">
+    <button class="btn btn-primary" onclick="history.back()">← Go Back</button>
+    <a href="https://pay.cupx.in" class="btn btn-outline">Back to CPay</a>
+    <a href="https://cupx.in" class="btn btn-outline" style="border-color: #34A853; color: #34A853;">Visit CupX</a>
+  </div>
+</div>
+
+<footer class="footer">
+  &copy; <script>document.write(new Date().getFullYear())</script> All rights reserved CupX Corporation
+</footer>
+
+</body>
+</html>
