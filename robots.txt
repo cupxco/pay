@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /txn/
+Disallow: /txn/*
+
+Sitemap: https://pay.cupx.in/sitemap.xml
