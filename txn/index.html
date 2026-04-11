@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Transaction Receipt – CPay</title>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Sora:wght@400;500;600;700&display=swap');
+:root{--blue:#1A73E8;--blue-d:#1557B0;--green:#34A853;--red:#EA4335;--yellow:#FBBC04;--bg:#F8F9FA;--text:#202124;--muted:#5F6368;--border:#E8EAED;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+.header{background:#fff;height:60px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10;}
+.header-left{display:flex;align-items:center;gap:10px;}
+.back-btn{background:none;border:none;color:var(--muted);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.back-btn:hover{background:var(--bg);}
+.cpay-logo{font-family:'Sora',sans-serif;font-size:22px;font-weight:700;letter-spacing:-.5px;}
+.c-b{color:var(--blue)}.c-r{color:var(--red)}.c-y{color:var(--yellow)}.c-g{color:var(--green)}
+.page{max-width:480px;margin:0 auto;padding:24px 16px 60px;}
+/* STATES */
+.state-box{text-align:center;padding:60px 20px;}
+.state-icon{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+.state-title{font-family:'Sora',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px;}
+.state-sub{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+.spinner{display:inline-block;width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--blue);color:#fff;border:none;border-radius:24px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:background .2s;}
+.btn-primary:hover{background:var(--blue-d);}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:#fff;color:var(--text);border:1.5px solid var(--border);border-radius:24px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;transition:background .2s;}
+.btn-outline:hover{background:var(--bg);}
+/* RECEIPT CARD */
+.receipt-wrap{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08);margin-bottom:20px;}
+.rcp-hdr{background:linear-gradient(135deg,#1A73E8,#0D47A1);padding:28px 24px 24px;color:#fff;text-align:center;}
+.rcp-logo{font-family:'Sora',sans-serif;font-size:30px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px;}
+.rcp-tagline{font-size:12px;opacity:.75;letter-spacing:.3px;}
+.rcp-status-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;margin-top:16px;}
+.rcp-body{padding:24px;}
+.rcp-amt-row{text-align:center;margin-bottom:24px;padding-bottom:24px;border-bottom:1.5px dashed var(--border);}
+.rcp-amt-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.rcp-amt-val{font-family:'Sora',sans-serif;font-size:44px;font-weight:700;color:var(--text);line-height:1;}
+.rcp-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.rcp-row-label{font-size:13px;color:var(--muted);font-weight:500;}
+.rcp-row-val{font-size:14px;font-weight:600;color:var(--text);text-align:right;max-width:55%;word-break:break-all;}
+.rcp-divider{height:1px;background:var(--border);margin:20px 0;}
+.rcp-ref-box{background:var(--bg);border-radius:14px;padding:16px;text-align:center;margin-bottom:20px;}
+.rcp-ref-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.rcp-ref-val{font-size:14px;font-family:monospace;color:var(--blue);font-weight:700;letter-spacing:.5px;}
+.rcp-qr-row{display:flex;justify-content:center;margin-bottom:16px;}
+.rcp-qr-box{background:var(--bg);border-radius:14px;padding:14px;display:inline-block;text-align:center;}
+.rcp-qr-label{font-size:11px;color:var(--muted);margin-top:8px;}
+.rcp-verify{text-align:center;margin-bottom:4px;}
+.rcp-verify a{font-size:12px;color:var(--blue);text-decoration:underline;}
+.rcp-footer{background:var(--bg);padding:16px 24px;text-align:center;border-top:1px solid var(--border);}
+.rcp-footer-brand{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.rcp-footer-url{font-size:12px;color:var(--muted);}
+/* PARTY INFO */
+.party-boxes{display:flex;gap:10px;margin-bottom:20px;}
+.party-box{flex:1;background:var(--bg);border-radius:14px;padding:14px;text-align:center;}
+.party-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;margin:0 auto 10px;}
+.party-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+.party-name{font-size:14px;font-weight:600;}
+.party-upi{font-size:11px;color:var(--muted);margin-top:2px;}
+.party-arrow{display:flex;align-items:center;justify-content:center;padding-top:10px;}
+/* ACTIONS */
+.action-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
+.act-btn{display:flex;align-items:center;gap:6px;padding:10px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--text);font-family:'DM Sans',sans-serif;transition:all .15s;flex:1;justify-content:center;}
+.act-btn:hover{background:var(--bg);}
+.act-btn.blue{background:var(--blue);color:#fff;border-color:var(--blue);}
+.act-btn.blue:hover{background:var(--blue-d);}
+/* ACCESS DENIED */
+.denied-box{background:#fff;border-radius:20px;padding:40px 24px;text-align:center;box-shadow:0 2px 16px rgba(0,0,0,.06);}
+.denied-icon{width:80px;height:80px;border-radius:50%;background:#FCE8E6;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;}
+/* LOGIN PROMPT */
+.login-card{background:#fff;border-radius:20px;padding:32px 24px;text-align:center;box-shadow:0 2px 16px rgba(0,0,0,.06);}
+.login-logo{font-family:'Sora',sans-serif;font-size:34px;font-weight:700;letter-spacing:-1px;margin-bottom:8px;}
+/* OFF-SCREEN RECEIPT FOR DOWNLOAD */
+#receiptTemplate{position:fixed;left:-9999px;top:0;width:360px;background:#fff;font-family:'DM Sans',sans-serif;}
+.dl-rcp-card{background:#fff;overflow:hidden;}
+.dl-rcp-hdr{background:linear-gradient(135deg,#1A73E8,#0D47A1);padding:24px 24px 20px;color:#fff;text-align:center;}
+.dl-rcp-logo{font-family:'Sora',sans-serif;font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:4px;}
+.dl-tagline{font-size:11px;opacity:.75;}
+.dl-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);padding:5px 14px;border-radius:20px;font-size:13px;font-weight:600;margin-top:14px;}
+.dl-body{padding:24px;}
+.dl-amt-row{text-align:center;margin-bottom:20px;padding-bottom:20px;border-bottom:1.5px dashed #E8EAED;}
+.dl-amt-label{font-size:12px;color:#5F6368;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.dl-amt-val{font-family:'Sora',sans-serif;font-size:40px;font-weight:700;color:#202124;line-height:1;}
+.dl-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.dl-row-label{font-size:12px;color:#5F6368;font-weight:500;}
+.dl-row-val{font-size:13px;font-weight:600;color:#202124;text-align:right;max-width:55%;word-break:break-all;}
+.dl-divider{height:1px;background:#E8EAED;margin:16px 0;}
+.dl-ref{text-align:center;margin-bottom:16px;}
+.dl-ref-lbl{font-size:11px;color:#5F6368;margin-bottom:4px;}
+.dl-ref-val{font-size:13px;font-family:monospace;color:#1A73E8;font-weight:600;letter-spacing:.5px;}
+.dl-qr-row{display:flex;justify-content:center;margin-bottom:12px;}
+.dl-qr-box{background:#F8F9FA;border-radius:12px;padding:12px;display:inline-block;}
+.dl-verify{text-align:center;margin-bottom:6px;font-size:11px;color:#1A73E8;}
+.dl-footer{background:#F8F9FA;padding:14px 24px;text-align:center;border-top:1px solid #E8EAED;}
+.dl-footer-brand{font-size:12px;font-weight:600;color:#202124;margin-bottom:2px;}
+.dl-footer-url{font-size:11px;color:#5F6368;}
+.dl-footer-ref{font-size:11px;color:#1A73E8;margin-top:4px;}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="header-left">
+    <a href="https://pay.cupx.in" class="back-btn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </a>
+    <div class="cpay-logo"><span class="c-b">C</span><span class="c-r">p</span><span class="c-y">a</span><span class="c-g">y</span></div>
+  </div>
+  <div style="font-size:13px;color:var(--muted);font-weight:500">Receipt</div>
+</header>
+
+<div class="page">
+  <!-- Loading -->
+  <div id="stateLoading" class="state-box">
+    <div class="spinner"></div>
+    <div style="margin-top:16px;color:var(--muted);font-size:14px">Loading transaction…</div>
+  </div>
+
+  <!-- Not found -->
+  <div id="stateNotFound" class="state-box" style="display:none">
+    <div class="state-icon" style="background:#FCE8E6">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    </div>
+    <div class="state-title">Transaction Not Found</div>
+    <div class="state-sub">This receipt link is invalid or the transaction doesn't exist.</div>
+    <a href="https://pay.cupx.in" class="btn-primary">Go to CPay</a>
+  </div>
+
+  <!-- Access denied (not party to txn) -->
+  <div id="stateAccessDenied" style="display:none">
+    <div class="denied-box">
+      <div class="denied-icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:700;margin-bottom:10px">Access Restricted</div>
+      <div style="font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px">This receipt is private. Only the sender, recipient, or <strong>@cupxcorporation</strong> can view this transaction.</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a href="https://pay.cupx.in" class="btn-outline">Go to CPay</a>
+        <button class="btn-primary" onclick="showLoginPrompt()">Sign In to View</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login prompt (not signed in) -->
+  <div id="stateLoginPrompt" style="display:none">
+    <div class="login-card">
+      <div class="login-logo"><span class="c-b">C</span><span class="c-r">p</span><span class="c-y">a</span><span class="c-g">y</span></div>
+      <div style="font-size:15px;color:var(--muted);margin-bottom:24px">Sign in to view this receipt</div>
+      <div id="loginErr" style="color:var(--red);font-size:13px;margin-bottom:12px;min-height:18px"></div>
+      <div style="margin-bottom:14px"><input id="lpUser" type="text" placeholder="Username" style="width:100%;height:46px;padding:0 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;outline:none;font-family:'DM Sans',sans-serif"/></div>
+      <div style="position:relative;margin-bottom:20px"><input id="lpPass" type="password" placeholder="Password" style="width:100%;height:46px;padding:0 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;outline:none;font-family:'DM Sans',sans-serif"/></div>
+      <button class="btn-primary" style="width:100%;justify-content:center" id="lpBtn" onclick="doTxnLogin()">Sign In &amp; View</button>
+      <div style="margin-top:16px;font-size:12px;color:var(--muted)">Only parties to this transaction can access it.</div>
+    </div>
+  </div>
+
+  <!-- Receipt view -->
+  <div id="stateReceipt" style="display:none">
+    <div class="receipt-wrap" id="receiptDisplayCard">
+      <div class="rcp-hdr">
+        <div class="rcp-logo"><span style="color:#8AB4F8">C</span><span style="color:#F28B82">p</span><span style="color:#FDD663">a</span><span style="color:#81C995">y</span></div>
+        <div class="rcp-tagline">by CupX Corporation</div>
+        <div class="rcp-status-badge" id="displayStatusBadge">✓ Payment Successful</div>
+      </div>
+      <div class="rcp-body">
+        <div class="rcp-amt-row">
+          <div class="rcp-amt-label">Amount</div>
+          <div class="rcp-amt-val" id="displayAmt">₹0</div>
+        </div>
+        <!-- Parties -->
+        <div class="party-boxes">
+          <div class="party-box">
+            <div class="party-avatar" id="displayFromAvatar">?</div>
+            <div class="party-label">From</div>
+            <div class="party-name" id="displayFromName">—</div>
+            <div class="party-upi" id="displayFromUpi">—</div>
+          </div>
+          <div class="party-arrow">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </div>
+          <div class="party-box">
+            <div class="party-avatar" id="displayToAvatar">?</div>
+            <div class="party-label">To</div>
+            <div class="party-name" id="displayToName">—</div>
+            <div class="party-upi" id="displayToUpi">—</div>
+          </div>
+        </div>
+        <div class="rcp-row"><span class="rcp-row-label">Date &amp; Time</span><span class="rcp-row-val" id="displayDate">—</span></div>
+        <div class="rcp-row" id="displayNoteRow" style="display:none"><span class="rcp-row-label">Note</span><span class="rcp-row-val" id="displayNote">—</span></div>
+        <div class="rcp-row"><span class="rcp-row-label">Type</span><span class="rcp-row-val" id="displayType">—</span></div>
+        <div class="rcp-divider"></div>
+        <div class="rcp-ref-box">
+          <div class="rcp-ref-label">Transaction Reference</div>
+          <div class="rcp-ref-val" id="displayRef">—</div>
+        </div>
+        <div class="rcp-qr-row">
+          <div class="rcp-qr-box">
+            <div id="displayQR"></div>
+            <div class="rcp-qr-label">Scan to verify</div>
+          </div>
+        </div>
+        <div class="rcp-verify"><a id="displayVerifyLink" href="#" target="_blank">—</a></div>
+      </div>
+      <div class="rcp-footer">
+        <div class="rcp-footer-brand">CPay by CupX Corporation</div>
+        <div class="rcp-footer-url">cupx.in · pay.cupx.in</div>
+      </div>
+    </div>
+
+    <!-- Download actions -->
+    <div class="action-row">
+      <button class="act-btn" onclick="downloadPNG()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download PNG</button>
+      <button class="act-btn" onclick="downloadPDF()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Download PDF</button>
+      <button class="act-btn" onclick="copyRef()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy Ref</button>
+    </div>
+    <div style="text-align:center"><a href="https://pay.cupx.in" class="btn-outline" style="display:inline-flex">Back to CPay</a></div>
+  </div>
+</div>
+
+<!-- Off-screen receipt for downloads -->
+<div id="receiptTemplate">
+  <div class="dl-rcp-card" id="dlReceiptCard">
+    <div class="dl-rcp-hdr">
+      <div class="dl-rcp-logo"><span style="color:#8AB4F8">C</span><span style="color:#F28B82">p</span><span style="color:#FDD663">a</span><span style="color:#81C995">y</span></div>
+      <div class="dl-tagline">by CupX Corporation</div>
+      <div class="dl-badge" id="dlBadge">✓ &nbsp;Payment Successful</div>
+    </div>
+    <div class="dl-body">
+      <div class="dl-amt-row"><div class="dl-amt-label">Amount Paid</div><div class="dl-amt-val" id="dlAmt">₹0</div></div>
+      <div class="dl-row"><span class="dl-row-label">From</span><span class="dl-row-val" id="dlFrom">—</span></div>
+      <div class="dl-row"><span class="dl-row-label">To</span><span class="dl-row-val" id="dlTo">—</span></div>
+      <div class="dl-row"><span class="dl-row-label">UPI ID</span><span class="dl-row-val" id="dlUpi">—</span></div>
+      <div class="dl-row"><span class="dl-row-label">Date &amp; Time</span><span class="dl-row-val" id="dlDate">—</span></div>
+      <div class="dl-row" id="dlNoteRow" style="display:none"><span class="dl-row-label">Note</span><span class="dl-row-val" id="dlNote">—</span></div>
+      <div class="dl-divider"></div>
+      <div class="dl-ref"><div class="dl-ref-lbl">Transaction Reference</div><div class="dl-ref-val" id="dlRef">—</div></div>
+      <div class="dl-qr-row"><div class="dl-qr-box"><div id="dlQR"></div></div></div>
+      <div class="dl-verify" id="dlVerify">—</div>
+    </div>
+    <div class="dl-footer">
+      <div class="dl-footer-brand">CPay by CupX Corporation</div>
+      <div class="dl-footer-url">cupx.in · pay.cupx.in</div>
+      <div class="dl-footer-ref" id="dlFooterRef">—</div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SB_URL='https://astnfrwbebzxcxlltpkn.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzdG5mcndiZWJ6eGN4bGx0cGtuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMjg2OTIsImV4cCI6MjA5MDgwNDY5Mn0.gqp08ROPoDZWyE0KVtV-VCFdTmEXl4HOEL8v7Xjd0I4';
+const db=supabase.createClient(SB_URL,SB_KEY);
+
+const CUPX_CORP='cupxcorporation'; // special admin account
+const COLORS=['#1A73E8','#34A853','#EA4335','#FBBC04','#8E24AA','#00897B','#E91E63','#F4511E'];
+const colorFor=s=>{let h=0;for(let c of(s||'?'))h=(h*31+c.charCodeAt(0))&0xFFFFFF;return COLORS[Math.abs(h)%COLORS.length];};
+const initial=s=>(s||'?').charAt(0).toUpperCase();
+const fmtAmt=n=>parseFloat(n||0).toLocaleString('en-IN',{minimumFractionDigits:2});
+
+let txnData=null;let currentUser=null;let refId=null;
+
+// Get ref from URL: /txn/CPY-XXXXXXXX or ?ref=CPY-XXXXXXXX
+(()=>{
+  const path=window.location.pathname;
+  const match=path.match(/\/txn\/([A-Z0-9-]+)/i);
+  if(match)refId=match[1];
+  else refId=new URLSearchParams(window.location.search).get('ref');
+})();
+
+// Check if user is logged in
+(()=>{
+  const saved=localStorage.getItem('cupx_user');
+  if(saved){try{currentUser=JSON.parse(saved);}catch(e){currentUser=null;}}
+})();
+
+function show(id){['stateLoading','stateNotFound','stateAccessDenied','stateLoginPrompt','stateReceipt'].forEach(s=>document.getElementById(s).style.display=s===id?'':'none');}
+
+// BOOT
+(async()=>{
+  if(!refId){show('stateNotFound');return;}
+
+  // Fetch transaction by reference_id
+  const{data,error}=await db.from('transactions').select('*').eq('reference_id',refId).single();
+  if(error||!data){show('stateNotFound');return;}
+  txnData=data;
+
+  // Check access
+  if(!currentUser){
+    // Not logged in - show login prompt
+    show('stateLoginPrompt');return;
+  }
+
+  checkAccessAndRender();
+})();
+
+function checkAccessAndRender(){
+  if(!txnData)return;
+  const u=currentUser.username;
+  const isParty=u===txnData.from_user||u===txnData.to_user||u===CUPX_CORP;
+  if(!isParty){show('stateAccessDenied');return;}
+  renderReceipt();
+}
+
+async function renderReceipt(){
+  show('stateReceipt');
+  const t=txnData;
+  // Fetch user details for both parties
+  const[fromRes,toRes]=await Promise.all([
+    db.from('users').select('username,full_name,upi_id,account_type,business_name').eq('username',t.from_user).single(),
+    db.from('users').select('username,full_name,upi_id,account_type,business_name').eq('username',t.to_user).single()
+  ]);
+  const fromUser=fromRes.data||{username:t.from_user};const toUser=toRes.data||{username:t.to_user};
+  const fromName=fromUser.full_name||t.from_user;const toName=(toUser.account_type==='business'&&toUser.business_name)||toUser.full_name||t.to_user;
+  const amt='₹'+fmtAmt(t.amount);
+  const dt=t.created_at?new Date(t.created_at).toLocaleString('en-IN',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+
+  // Status badge
+  const statusBadge=t.status==='success'?'✓ &nbsp;Payment Successful':t.status==='pending'?'⏳ &nbsp;Pending':'✕ &nbsp;Failed';
+  const statusColor=t.status==='success'?'rgba(255,255,255,.2)':t.status==='pending'?'rgba(249,171,0,.3)':'rgba(234,67,53,.3)';
+  document.getElementById('displayStatusBadge').textContent='';
+  document.getElementById('displayStatusBadge').innerHTML=statusBadge;
+  document.getElementById('displayStatusBadge').style.background=statusColor;
+
+  document.getElementById('displayAmt').textContent=amt;
+  document.getElementById('displayDate').textContent=dt;
+  document.getElementById('displayRef').textContent=t.reference_id||'—';
+  document.getElementById('displayType').textContent=(t.type==='transfer'?'Transfer':t.type==='request_payment'?'Request Payment':t.type||'—');
+
+  if(t.txn_note){document.getElementById('displayNoteRow').style.display='flex';document.getElementById('displayNote').textContent=t.txn_note;}
+
+  // Parties
+  const fromAv=document.getElementById('displayFromAvatar');
+  fromAv.textContent=initial(fromName);fromAv.style.background=colorFor(t.from_user);
+  document.getElementById('displayFromName').textContent=fromName;
+  document.getElementById('displayFromUpi').textContent=fromUser.upi_id||t.from_user;
+
+  const toAv=document.getElementById('displayToAvatar');
+  toAv.textContent=initial(toName);toAv.style.background=colorFor(t.to_user);
+  document.getElementById('displayToName').textContent=toName;
+  document.getElementById('displayToUpi').textContent=toUser.upi_id||t.to_user;
+
+  // QR + verify link
+  const verifyUrl=window.location.href;
+  const qrEl=document.getElementById('displayQR');qrEl.innerHTML='';
+  try{new QRCode(qrEl,{text:verifyUrl,width:100,height:100,colorDark:'#202124',colorLight:'#F8F9FA',correctLevel:QRCode.CorrectLevel.M});}catch(e){}
+  const vl=document.getElementById('displayVerifyLink');vl.href=verifyUrl;vl.textContent='Verify: pay.cupx.in/txn/'+t.reference_id;
+
+  // Build download template
+  buildDLTemplate(t,fromUser,toUser,fromName,toName,dt,verifyUrl);
+}
+
+function buildDLTemplate(t,fromUser,toUser,fromName,toName,dt,verifyUrl){
+  document.getElementById('dlAmt').textContent='₹'+fmtAmt(t.amount);
+  document.getElementById('dlFrom').textContent=fromName+(fromUser.upi_id?' ('+fromUser.upi_id+')':'');
+  document.getElementById('dlTo').textContent=toName+(toUser.upi_id?' ('+toUser.upi_id+')':'');
+  document.getElementById('dlUpi').textContent=toUser.upi_id||t.to_user;
+  document.getElementById('dlDate').textContent=dt;
+  document.getElementById('dlRef').textContent=t.reference_id||'—';
+  document.getElementById('dlFooterRef').textContent=t.reference_id||'—';
+  document.getElementById('dlVerify').textContent='Verify: pay.cupx.in/txn/'+t.reference_id;
+  if(t.txn_note){document.getElementById('dlNoteRow').style.display='flex';document.getElementById('dlNote').textContent=t.txn_note;}
+  const qrEl=document.getElementById('dlQR');qrEl.innerHTML='';
+  try{new QRCode(qrEl,{text:verifyUrl,width:80,height:80,colorDark:'#202124',colorLight:'#F8F9FA',correctLevel:QRCode.CorrectLevel.M});}catch(e){}
+  const statusLabel=t.status==='success'?'✓  Payment Successful':t.status==='pending'?'⏳  Pending':'✕  Failed';
+  document.getElementById('dlBadge').textContent=statusLabel;
+}
+
+async function downloadPNG(){
+  await new Promise(r=>setTimeout(r,300));
+  try{
+    const canvas=await html2canvas(document.getElementById('dlReceiptCard'),{scale:2.5,backgroundColor:'#ffffff',useCORS:true,logging:false});
+    const link=document.createElement('a');link.download=`CPay-Receipt-${refId}.png`;link.href=canvas.toDataURL('image/png');link.click();
+  }catch(e){alert('Could not generate PNG: '+e.message);}
+}
+
+async function downloadPDF(){
+  await new Promise(r=>setTimeout(r,300));
+  try{
+    const canvas=await html2canvas(document.getElementById('dlReceiptCard'),{scale:2.5,backgroundColor:'#ffffff',useCORS:true,logging:false});
+    const imgData=canvas.toDataURL('image/png');const{jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'portrait',unit:'mm',format:'a6'});
+    const pw=pdf.internal.pageSize.getWidth(),ph=pdf.internal.pageSize.getHeight();
+    const ratio=canvas.width/canvas.height;let w=pw,h=pw/ratio;if(h>ph){h=ph;w=ph*ratio;}
+    const x=(pw-w)/2,y=(ph-h)/2;
+    pdf.addImage(imgData,'PNG',x,y,w,h);
+    pdf.link(x,y+h*0.83,w,h*0.07,{url:window.location.href});
+    pdf.save(`CPay-Receipt-${refId}.pdf`);
+  }catch(e){alert('Could not generate PDF: '+e.message);}
+}
+
+function copyRef(){
+  if(!refId)return;
+  navigator.clipboard.writeText(refId).then(()=>{
+    document.querySelectorAll('.act-btn').forEach(b=>{if(b.textContent.includes('Copy')){const o=b.innerHTML;b.innerHTML='✓ Copied!';setTimeout(()=>{b.innerHTML=o;},1500);}});
+  }).catch(()=>alert('Reference: '+refId));
+}
+
+function showLoginPrompt(){show('stateLoginPrompt');}
+
+async function doTxnLogin(){
+  const u=document.getElementById('lpUser').value.trim().toLowerCase();
+  const p=document.getElementById('lpPass').value;
+  const errEl=document.getElementById('loginErr');const btn=document.getElementById('lpBtn');
+  errEl.textContent='';
+  if(!u||!p){errEl.textContent='Please fill in all fields';return;}
+  btn.disabled=true;btn.textContent='Signing in…';
+  const{data,error}=await db.from('users').select('*').eq('username',u).eq('password',p).single();
+  btn.disabled=false;btn.textContent='Sign In & View';
+  if(error||!data){errEl.textContent='Invalid username or password';return;}
+  localStorage.setItem('cupx_user',JSON.stringify(data));currentUser=data;
+  // Check access
+  const isParty=u===txnData.from_user||u===txnData.to_user||u===CUPX_CORP;
+  if(!isParty){show('stateAccessDenied');return;}
+  renderReceipt();
+}
+
+document.getElementById('lpUser').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('lpPass').focus();});
+document.getElementById('lpPass').addEventListener('keydown',e=>{if(e.key==='Enter')doTxnLogin();});
+</script>
+</body>
+</html>
