@@ -109,11 +109,32 @@ p { color: var(--gpay-muted); margin-bottom: 30px; font-size: 15px; line-height:
   font-size: 60px;
   margin-bottom: 20px;
 }
+
+/* Redirect state */
+.redirecting {
+  display: none;
+}
+.redirecting .illustration { font-size: 48px; margin-bottom: 16px; }
+.redirect-bar {
+  height: 4px;
+  background: var(--gpay-border);
+  border-radius: 2px;
+  margin: 20px 0 0;
+  overflow: hidden;
+}
+.redirect-bar-fill {
+  height: 100%;
+  background: var(--gpay-blue);
+  border-radius: 2px;
+  animation: fillBar 1.2s ease-in-out forwards;
+}
+@keyframes fillBar { from { width: 0% } to { width: 100% } }
 </style>
 </head>
 <body>
 
-<div class="error-container">
+<!-- Normal 404 view -->
+<div class="error-container" id="notFoundView">
   <div class="cpay-logo">
     <span class="c-blue">C</span><span class="c-red">p</span><span class="c-yellow">a</span><span class="c-green">y</span>
   </div>
@@ -130,9 +151,49 @@ p { color: var(--gpay-muted); margin-bottom: 30px; font-size: 15px; line-height:
   </div>
 </div>
 
+<!-- Redirecting to txn view -->
+<div class="error-container redirecting" id="redirectView">
+  <div class="cpay-logo">
+    <span class="c-blue">C</span><span class="c-red">p</span><span class="c-yellow">a</span><span class="c-green">y</span>
+  </div>
+  <div class="illustration">🧾</div>
+  <h1>Loading Receipt…</h1>
+  <p id="redirectMsg">Opening transaction <strong id="redirectRef"></strong></p>
+  <div class="redirect-bar"><div class="redirect-bar-fill"></div></div>
+</div>
+
 <footer class="footer">
   &copy; <script>document.write(new Date().getFullYear())</script> All rights reserved CupX Corporation
 </footer>
 
+<script>
+(function () {
+  const path = window.location.pathname;
+
+  // Match /txn/CPY-XXXXXXXX
+  const txnMatch = path.match(/\/txn\/([A-Z0-9-]+)/i);
+
+  if (txnMatch) {
+    const ref = txnMatch[1];
+    // Show redirect UI
+    document.getElementById('notFoundView').style.display = 'none';
+    document.getElementById('redirectView').style.display = 'block';
+    document.getElementById('redirectRef').textContent = ref;
+    // Redirect after animation (1.3s)
+    setTimeout(function () {
+      window.location.replace('https://pay.cupx.in/txn/?ref=' + ref);
+    }, 1300);
+    return;
+  }
+
+  // Also handle if someone hits /txn/ with no ref — send to pay home
+  if (path === '/txn/' || path === '/txn') {
+    window.location.replace('https://pay.cupx.in');
+    return;
+  }
+
+  // Otherwise show normal 404
+})();
+</script>
 </body>
 </html>
